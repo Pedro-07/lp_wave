@@ -95,11 +95,13 @@ export function PerturbationSection() {
         scrollTrigger: { trigger: q("[data-rise]")[0], start: "top 88%" },
       })
 
-      // Estado inicial. 120% (não 100%): com entrelinha 0.92 os acentos das
-      // maiúsculas passam da caixa da linha e apareceriam na borda da máscara.
-      const HIDE = 120
-      gsap.set(motives.slice(1), { yPercent: HIDE })
-      gsap.set(closingLines, { yPercent: HIDE + 20 })
+      // Estado inicial. 140% (não 100%): a janela tem folga para os acentos das
+      // maiúsculas, então a frase precisa sair além dela.
+      const HIDE = 140
+      // Além do deslocamento, as frases fora de cena ficam invisíveis (autoAlpha 0):
+      // nada da próxima frase aparece antes da rolagem chegar nela.
+      gsap.set(motives.slice(1), { yPercent: HIDE, autoAlpha: 0 })
+      gsap.set(closingLines, { yPercent: HIDE, autoAlpha: 0 })
       gsap.set(layers, { "--wipe": "100%" })
 
       // Pontos de encaixe: cada frase inteira + fecho + fim.
@@ -130,12 +132,12 @@ export function PerturbationSection() {
 
       // Troca de frases: a entrada de k ocupa a 2ª metade do passo [k-0.5, k].
       for (let k = 1; k < MOTIVES.length; k++) {
-        tl.to(motives[k - 1], { yPercent: -HIDE, duration: 0.5, ease: "power2.inOut" }, k - 0.5)
-        tl.to(motives[k], { yPercent: 0, duration: 0.5, ease: "power2.inOut" }, k - 0.5)
+        tl.to(motives[k - 1], { yPercent: -HIDE, autoAlpha: 0, duration: 0.45, ease: "power2.in" }, k - 0.5)
+        tl.to(motives[k], { yPercent: 0, autoAlpha: 1, duration: 0.45, ease: "power2.out" }, k - 0.45)
       }
       const last = MOTIVES.length
-      tl.to(motives[last - 1], { yPercent: -HIDE, duration: 0.5, ease: "power2.inOut" }, last - 0.5)
-      tl.to(closingLines, { yPercent: 0, duration: 0.5, ease: "power2.out", stagger: 0.08 }, last - 0.45)
+      tl.to(motives[last - 1], { yPercent: -HIDE, autoAlpha: 0, duration: 0.45, ease: "power2.in" }, last - 0.5)
+      tl.to(closingLines, { yPercent: 0, autoAlpha: 1, duration: 0.4, ease: "power2.out", stagger: 0.05 }, last - 0.45)
 
       // Graduação: cada camada de cor "tinge" a faixa no passo em que aparece.
       layers.forEach((layer, i) => {
@@ -206,26 +208,29 @@ export function PerturbationSection() {
                   Faixa <span data-belt-name>Branca</span>
                 </span>
               </p>
-              <div data-motive-stage className="grid">
+              {/* Cada frase fica numa "janela" (overflow-hidden) com folga de
+                  0.25em em cima e 0.15em embaixo — compensada por margem negativa —
+                  para os acentos das maiúsculas (É, Ú, Ã) não serem cortados. */}
+              <div
+                data-motive-stage
+                className="grid font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92] tracking-[-0.01em]"
+              >
                 {MOTIVES.map((m) => (
-                  <p key={m} className="col-start-1 row-start-1 overflow-hidden">
-                    {/* h-full: a frase ocupa a célula toda (altura do maior item),
-                        então yPercent 100 a tira inteira da máscara. */}
-                    <span
-                      data-motive
-                      className="block h-full font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92] tracking-[-0.01em]"
-                    >
+                  <p key={m} className="col-start-1 row-start-1 -mt-[0.25em] -mb-[0.15em] overflow-hidden pt-[0.25em] pb-[0.15em]">
+                    {/* h-full: a frase ocupa a janela toda (altura do maior item),
+                        então o deslocamento a tira inteira da máscara. */}
+                    <span data-motive className="block h-full">
                       {m}
                     </span>
                   </p>
                 ))}
-                <h2 className="col-start-1 row-start-1 font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92] tracking-[-0.01em]">
-                  <span className="block overflow-hidden">
+                <h2 className="col-start-1 row-start-1">
+                  <span className="-mt-[0.25em] -mb-[0.15em] block overflow-hidden pt-[0.25em] pb-[0.15em]">
                     <span data-closing-line className="block text-paper/40">
                       Aqui, ela não é evitada.
                     </span>
                   </span>
-                  <span className="block overflow-hidden">
+                  <span className="-mt-[0.25em] -mb-[0.15em] block overflow-hidden pt-[0.25em] pb-[0.15em]">
                     <span data-closing-line className="block">
                       É direcionada.
                     </span>
