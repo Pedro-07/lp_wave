@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react"
 import { OceanSound } from "@/lib/ocean-sound"
 import { gsap, SplitText } from "@/lib/scroll"
 import { CtaLink } from "./cta-link"
+import { SoundGate } from "./sound-gate"
 import { SymbolDraw, SYMBOL_BRANCH_AT, SYMBOL_MAIN_LENGTH } from "./symbol-draw"
 
 // Hero "Onda → Símbolo" — SPEC.md §4, Seção 1.
@@ -31,14 +32,14 @@ function detectMode(): Mode {
   return "video"
 }
 
-type SoundState = "armed" | "on" | "off"
 const SOUND_PREF_KEY = "bw-sound"
 
-function readSoundPref(): SoundState {
+/** A tela de entrada aparece, a menos que a pessoa já tenha escolhido "sem som". */
+function shouldShowGate() {
   try {
-    return localStorage.getItem(SOUND_PREF_KEY) === "off" ? "off" : "armed"
+    return localStorage.getItem(SOUND_PREF_KEY) !== "off"
   } catch {
-    return "armed"
+    return true
   }
 }
 
@@ -66,14 +67,15 @@ export function WaveHero({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mode] = useState<Mode>(detectMode)
   const [mediaReady, setMediaReady] = useState(false)
-  // Som: ligado por padrão ("armed"), mas o navegador só libera áudio após um
-  // gesto — então ele começa no primeiro toque/clique/tecla em qualquer lugar.
-  // Se a pessoa desligar, a escolha fica salva e não insistimos mais.
+  // Som: o navegador só libera áudio após um gesto, então a tela de entrada
+  // (SoundGate) pede esse gesto. "Sem som" fica salvo e a tela não volta;
+  // o botão SOM no canto liga/desliga a qualquer momento.
   const soundRef = useRef<OceanSound | null>(null)
   const insideRef = useRef(true)
-  const [soundState, setSoundState] = useState<SoundState>(readSoundPref)
-  const soundOn = soundState === "on"
-  const [isTouch] = useState(() => matchMedia("(pointer: coarse)").matches)
+  const [soundOn, setSoundOn] = useState(false)
+  const [gateOpen, setGateOpen] = useState(shouldShowGate)
+  /** Vira true quando a pessoa entra no site — dispara a abertura do hero. */
+  const [entered, setEntered] = useState(() => !shouldShowGate())
 
   const getSound = () => (soundRef.current ??= new OceanSound())
 
@@ -81,14 +83,14 @@ export function WaveHero({
     const sound = getSound()
     sound.setInside(insideRef.current)
     sound.start().then(() => {
-      if (sound.running) setSoundState("on")
+      if (sound.running) setSoundOn(true)
     })
   }
 
   const toggleSound = () => {
     if (soundOn) {
       getSound().stop()
-      setSoundState("off")
+      setSoundOn(false)
       saveSoundPref("off")
     } else {
       saveSoundPref("on")
@@ -96,16 +98,11 @@ export function WaveHero({
     }
   }
 
-  useEffect(() => {
-    if (soundState !== "armed") return
-    const events = ["pointerdown", "touchend", "keydown"] as const
-    const onGesture = (e: Event) => {
-      if ((e.target as Element | null)?.closest?.("[data-sound-toggle]")) return
-      startSound()
-    }
-    events.forEach((ev) => window.addEventListener(ev, onGesture, { capture: true, passive: true }))
-    return () => events.forEach((ev) => window.removeEventListener(ev, onGesture, { capture: true }))
-  }, [soundState])
+  const enterSite = (withSound: boolean) => {
+    saveSoundPref(withSound ? "on" : "off")
+    if (withSound) startSound()
+    setEntered(true)
+  }
 
   useEffect(() => {
     const onVisibility = () => {
@@ -206,11 +203,6 @@ export function WaveHero({
         }
       }
 
-      // ── Entrada (load) ──────────────────────────────────────────
-      const split = SplitText.create(q("[data-title]")[0], { type: "lines", mask: "lines" })
-      gsap.from(split.lines, { yPercent: 100, duration: 1.2, ease: "expo.out", stagger: 0.08, delay: 0.2 })
-      gsap.from(q("[data-label]"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out", stagger: 0.06, delay: 0.5 })
-
       const endItems = q("[data-end-item]")
       gsap.set(endItems, { autoAlpha: 0, y: 24, filter: "blur(8px)" })
 
@@ -287,6 +279,18 @@ export function WaveHero({
       return () => cleanups.forEach((fn) => fn())
     },
     { scope, dependencies: [mode] },
+  )
+
+  // ── Abertura: roda quando a pessoa entra (após a tela de entrada) ──
+  useGSAP(
+    () => {
+      if (mode === "static" || !entered) return
+      const q = gsap.utils.selector(scope.current)
+      const split = SplitText.create(q("[data-title]")[0], { type: "lines", mask: "lines" })
+      gsap.from(split.lines, { yPercent: 100, duration: 1.2, ease: "expo.out", stagger: 0.08, delay: 0.35 })
+      gsap.from(q("[data-label]"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out", stagger: 0.06, delay: 0.6 })
+    },
+    { scope, dependencies: [mode, entered] },
   )
 
   const isStatic = mode === "static"
@@ -367,22 +371,10 @@ export function WaveHero({
             </span>
             <span className="pl-[0.32em]">Som</span>
           </button>
-          <p
-            aria-live="polite"
-            className={
-              "-mt-1 flex items-center gap-2 text-[0.625rem] normal-case tracking-[0.12em] text-paper/60 transition-opacity duration-700 " +
-              (soundState === "armed" ? "opacity-100" : "opacity-0")
-            }
-          >
-            {soundState === "armed" && (
-              <>
-                <span className="size-1.5 animate-pulse rounded-full bg-accent" aria-hidden="true" />
-                {isTouch ? "Toque na tela para ouvir o mar" : "Clique na página para ouvir o mar"}
-              </>
-            )}
-          </p>
         </div>
       </div>
+
+      {gateOpen && <SoundGate onChoose={enterSite} onClosed={() => setGateOpen(false)} />}
       <p
         data-label
         className="pointer-events-none absolute bottom-[clamp(1.25rem,3vw,2.5rem)] left-[var(--gutter)] hidden text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/70 sm:block"

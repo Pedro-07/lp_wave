@@ -5,18 +5,31 @@ import { SplitText } from "gsap/SplitText"
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 
+let lenis: Lenis | null = null
+let locked = false
+
 export function initScroll() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return null
-  const lenis = new Lenis({ lerp: 0.1 })
+  lenis = new Lenis({ lerp: 0.1 })
+  if (locked) lenis.stop()
   lenis.on("scroll", ScrollTrigger.update)
-  const tick = (t: number) => lenis.raf(t * 1000)
+  const tick = (t: number) => lenis?.raf(t * 1000)
   gsap.ticker.add(tick)
   gsap.ticker.lagSmoothing(0)
   document.fonts.ready.then(() => ScrollTrigger.refresh())
   return () => {
     gsap.ticker.remove(tick)
-    lenis.destroy()
+    lenis?.destroy()
+    lenis = null
   }
+}
+
+/** Trava/destrava a rolagem da página (usado pela tela de entrada). */
+export function setScrollLocked(value: boolean) {
+  locked = value
+  if (value) lenis?.stop()
+  else lenis?.start()
+  document.documentElement.style.overflow = value ? "hidden" : ""
 }
 
 export { gsap, ScrollTrigger, SplitText }
