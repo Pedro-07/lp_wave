@@ -1,0 +1,14 @@
+# Arquivos originais das fontes pagas — não redistribuir em repositório público.
+# (As versões web .woff2 usadas pelo site ficam em site/public/fonts.)
+brand/fonts/
+
+# Material interno / fora do projeto
+MANUAL DA MARCA - BLACK WAVE 1.0.pdf
+site-marca-premium.zip
+
+# Build e dependências
+node_modules/
+dist/
+.vercel/
+*.log
+.DS_Store
