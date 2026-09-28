@@ -57,6 +57,24 @@ Hover: CTA com botão magnético (só desktop).
 Mobile/iOS: sequência de imagens em canvas no lugar do vídeo (vertical própria em retrato).
 Reduced motion: sem pin; mostra o poster com o símbolo completo, naming, slogan e CTA.
 
+### Seção 2 — A perturbação
+Objetivo: fazer quem lê se reconhecer em um motivo para começar, e apresentar a tese da marca (a perturbação é direcionada).
+Conteúdo (aprovado 2026-09-28, base: "A Filosofia da Marca" do manual):
+- Rótulo: `02 — A perturbação`
+- Título: **Todo mundo chega com alguma coisa.**
+- Apoio: Ninguém pisa no tatame por acaso. Cada um traz uma inquietação.
+- Lista: Vontade de evoluir. / Superar um limite. / Confiança. / Pertencer. / Saúde. / Competir. / Reconstruir a autoestima.
+- Fecho: **Aqui, ela não é evitada. É direcionada.**
+- Texto: A Black Wave existe para formar faixas pretas saudáveis, com excelência técnica e caráter sólido. Gente preparada para gerar impacto positivo na sociedade.
+- CTA: Agendar aula experimental → `#aula-experimental`
+Assets: nenhum (tipografia como protagonista).
+Layout desktop: grade de 12 colunas; col. 1–4 fixa (sticky) com rótulo, título e apoio; col. 5–12 com a lista em display gigante (Astoria Sans Condensed, caixa alta). Fecho ocupa a largura toda, 2 linhas (1ª em cinza, 2ª em branco), texto e CTA alinhados à direita da coluna 5.
+Layout mobile: tudo empilhado; lista em ~2.75rem.
+Scroll: cada item da lista acende (cinza 18% → branco) enquanto cruza o centro da tela, com um traço vermelho de 3 px que cresce à esquerda do item ativo (0.5 s, power2.inOut). Sem pin.
+Entrada: rótulo/título/apoio e fecho com reveal por linha (SplitText + máscara, 1.2 s, expo.out); texto e CTA sobem 24 px com fade.
+Hover: CTA igual ao do hero.
+Reduced motion: lista inteira em branco, sem reveals.
+
 ## 5. Regras de movimento
 - Máx. 1 wow por seção, 3 no site. O hero é o wow nº 1.
 - Easings: `expo.out` entradas, `power2.inOut` transições, `none` só em scrub.

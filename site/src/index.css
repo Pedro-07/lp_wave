@@ -42,6 +42,10 @@
 
   --fs-hero: clamp(2.875rem, 7vw, 7.5rem);
   --fs-label: clamp(0.625rem, 0.8vw, 0.75rem);
+  --fs-h2: clamp(2.25rem, 4.2vw, 4.75rem);
+  --fs-list: clamp(2.75rem, 7.2vw, 7.5rem);
+  --fs-body: clamp(1rem, 1.1vw, 1.2rem);
+  --space-section: clamp(6rem, 14vw, 14rem);
   --gutter: clamp(1rem, 4vw, 4rem);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }

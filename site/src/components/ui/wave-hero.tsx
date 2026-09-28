@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import { OceanSound } from "@/lib/ocean-sound"
 import { gsap, SplitText } from "@/lib/scroll"
+import { CtaLink } from "./cta-link"
 import { SymbolDraw, SYMBOL_BRANCH_AT, SYMBOL_MAIN_LENGTH } from "./symbol-draw"
 
 // Hero "Onda → Símbolo" — SPEC.md §4, Seção 1.
@@ -408,17 +409,9 @@ export function WaveHero({
           <p className="pl-[0.6em] text-[length:var(--fs-label)] uppercase tracking-[0.6em] text-paper/70">Jiu Jitsu Team</p>
         </div>
         <img data-end-item src="/brand/slogan-white.webp" alt="Just Flow" className="w-[min(46vw,240px)]" />
-        <a
-          data-end-item
-          data-cta
-          href={ctaHref}
-          className="group mt-2 inline-flex items-center gap-4 whitespace-nowrap border border-paper/40 px-5 py-4 text-xs uppercase tracking-[0.18em] transition-colors duration-300 hover:border-accent hover:bg-accent sm:px-7 sm:text-sm sm:tracking-[0.24em]"
-        >
+        <CtaLink data-end-item data-cta href={ctaHref} className="mt-2">
           {ctaLabel}
-          <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
-            <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-          </svg>
-        </a>
+        </CtaLink>
       </div>
 
       {/* Dica de rolagem */}

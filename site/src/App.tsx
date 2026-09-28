@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { PerturbationSection } from "@/components/ui/perturbation-section"
 import { WaveHero } from "@/components/ui/wave-hero"
 import { initScroll } from "@/lib/scroll"
 
@@ -8,6 +9,7 @@ export default function App() {
   return (
     <main className="grain">
       <WaveHero />
+      <PerturbationSection />
 
       {/* Provisório: só para testar a saída do pin. Seções reais virão do SPEC. */}
       <section
