@@ -42,5 +42,5 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - Não usar fotos de banco nem ícones genéricos no lugar das logos.
 - [ ] Confirmar o vermelho: manual diz #DC0000, arquivos do símbolo usam #FD002A
 - [ ] Revisar o hero no celular real (iPhone/Android)
-- [ ] SEO: ao ter domínio, trocar `VITE_SITE_URL` em `site/.env`, criar sitemap.xml e cadastrar no Google Search Console
+- [ ] SEO: hoje em https://lp-wave.vercel.app — ao ter domínio próprio, trocar `VITE_SITE_URL` em `site/.env`, criar sitemap.xml e cadastrar no Google Search Console
 - [ ] SEO local: endereço, telefone e horários para o JSON-LD e para o Perfil da Empresa no Google
