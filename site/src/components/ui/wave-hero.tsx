@@ -74,8 +74,6 @@ export function WaveHero({
   const insideRef = useRef(true)
   const [soundOn, setSoundOn] = useState(false)
   const [gateOpen, setGateOpen] = useState(shouldShowGate)
-  /** Vira true quando a pessoa entra no site — dispara a abertura do hero. */
-  const [entered, setEntered] = useState(() => !shouldShowGate())
 
   const getSound = () => (soundRef.current ??= new OceanSound())
 
@@ -101,7 +99,6 @@ export function WaveHero({
   const enterSite = (withSound: boolean) => {
     saveSoundPref(withSound ? "on" : "off")
     if (withSound) startSound()
-    setEntered(true)
   }
 
   useEffect(() => {
@@ -281,16 +278,16 @@ export function WaveHero({
     { scope, dependencies: [mode] },
   )
 
-  // ── Abertura: roda quando a pessoa entra (após a tela de entrada) ──
+  // ── Abertura (load) — visível por trás do modal de som ──
   useGSAP(
     () => {
-      if (mode === "static" || !entered) return
+      if (mode === "static") return
       const q = gsap.utils.selector(scope.current)
       const split = SplitText.create(q("[data-title]")[0], { type: "lines", mask: "lines" })
       gsap.from(split.lines, { yPercent: 100, duration: 1.2, ease: "expo.out", stagger: 0.08, delay: 0.35 })
       gsap.from(q("[data-label]"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out", stagger: 0.06, delay: 0.6 })
     },
-    { scope, dependencies: [mode, entered] },
+    { scope, dependencies: [mode] },
   )
 
   const isStatic = mode === "static"
