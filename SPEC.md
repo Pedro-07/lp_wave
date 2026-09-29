@@ -52,6 +52,7 @@ Scroll (2026-09-29 v2, a pedido: sincronizado, mais sensível e mais rápido —
 - 0.50 → 0.66: overlay preto 0 → 0.92 (a onda "afunda").
 - 0.58 → 0.88: traço do símbolo se desenha (máscara SVG por segmentos); o vermelho aparece por último.
 - 0.84 → 1.00: naming, slogan e CTA entram com reveal (y 24 → 0, blur 8 → 0).
+- Dica de rolagem sempre visível na base (a pedido, para ninguém ficar travado): "ROLE" + seta no início; troca para "CONTINUE ROLANDO" logo que a rolagem começa e fica até o hero soltar. Fechamento escala também pela altura (svh) e reserva espaço embaixo para a dica — sem sobreposição em celular deitado ou notebook baixo.
 - > 0.97: ênfase no CTA — acende em vermelho de acento (`.cta-live`) com pulso de contorno a cada 2,8 s; apaga se a pessoa rolar de volta.
 Entrada (load): rótulos e título com reveal por linha, 1.2 s, expo.out.
 Hover: CTA com botão magnético (só desktop).

@@ -237,7 +237,10 @@ export function WaveHero({
       const proxy = { p: 0 }
       tl.to(proxy, { p: 1, duration: 0.6, onUpdate: () => render(proxy.p) }, 0)
       tl.to(q("[data-media]"), { scale: 1.06, duration: 0.6 }, 0)
-      tl.to(q("[data-hint]"), { autoAlpha: 0, duration: 0.03 }, 0)
+      // A dica de rolagem nunca some (ninguém fica sem saber que precisa rolar):
+      // "Role" no início, "Continue rolando" assim que a rolagem começa.
+      tl.to(q("[data-hint-start]"), { autoAlpha: 0, duration: 0.03 }, 0.02)
+      tl.fromTo(q("[data-hint-more]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.03 }, 0.03)
       tl.to(q("[data-title]"), { autoAlpha: 0, y: -24, filter: "blur(10px)", duration: 0.25 }, 0)
       tl.to(q("[data-shade]"), { opacity: 0.92, duration: 0.16 }, 0.5)
 
@@ -382,14 +385,15 @@ export function WaveHero({
         {title}
       </h1>
 
-      {/* Fechamento: símbolo + naming + slogan + CTA */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-[clamp(1.25rem,3vh,2.25rem)] px-[var(--gutter)] [&_a]:pointer-events-auto">
-        <SymbolDraw complete={isStatic} className="w-[min(88vw,1080px)]" />
+      {/* Fechamento: símbolo + naming + slogan + CTA. Larguras limitadas também
+          pela altura (celular deitado) e respiro embaixo para a dica de rolagem. */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-[clamp(0.75rem,3vh,2.25rem)] px-[var(--gutter)] pb-[clamp(3.5rem,9vh,5rem)] pt-[clamp(1rem,4vh,3rem)] [&_a]:pointer-events-auto">
+        <SymbolDraw complete={isStatic} className="w-[min(88vw,1080px,110svh)]" />
         <div data-end-item className="flex flex-col items-center gap-3">
-          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-[min(70vw,560px)]" />
+          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-[min(70vw,560px,72svh)]" />
           <p className="pl-[0.6em] text-[length:var(--fs-label)] uppercase tracking-[0.6em] text-paper/70">Jiu Jitsu Team</p>
         </div>
-        <img data-end-item src="/brand/slogan-white.webp" alt="Just Flow" width={1400} height={530} className="h-auto w-[min(46vw,240px)]" />
+        <img data-end-item src="/brand/slogan-white.webp" alt="Just Flow" width={1400} height={530} className="h-auto w-[min(46vw,240px,28svh)]" />
         <CtaLink data-end-item data-cta href={ctaHref} className={"mt-2 " + (isStatic ? "cta-live" : "")}>
           {ctaLabel}
         </CtaLink>
@@ -401,7 +405,14 @@ export function WaveHero({
           data-hint
           className="pointer-events-none absolute bottom-[clamp(1.25rem,3vw,2.5rem)] left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[length:var(--fs-label)] uppercase tracking-[0.4em] text-paper/70"
         >
-          <span className="pl-[0.4em]">Role</span>
+          <span className="grid justify-items-center whitespace-nowrap [&>*]:col-start-1 [&>*]:row-start-1">
+            <span data-hint-start className="pl-[0.4em]">
+              Role
+            </span>
+            <span data-hint-more aria-hidden="true" className="invisible pl-[0.4em] opacity-0">
+              Continue rolando
+            </span>
+          </span>
           <svg width="12" height="18" viewBox="0 0 12 18" aria-hidden="true" className="animate-bounce">
             <path d="M6 1v15M1 11l5 5 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" />
           </svg>
