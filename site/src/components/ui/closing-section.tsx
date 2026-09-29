@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 import { CtaLink } from "./cta-link"
 import { addSymbolDraw, SymbolDraw } from "./symbol-draw"
@@ -9,10 +10,13 @@ import { addSymbolDraw, SymbolDraw } from "./symbol-draw"
 
 export function ClosingSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
   const [isStatic] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches)
 
   useGSAP(
     () => {
+      if (!idleReady) return
       if (isStatic) return
       const root = scope.current!
       const q = gsap.utils.selector(root)
@@ -29,7 +33,7 @@ export function ClosingSection() {
       addSymbolDraw(tl, root, 0.5, 0.3)
       tl.from(q("[data-closing-rise]"), { opacity: 0, y: 24, stagger: 0.04, duration: 0.12, ease: "power2.out" }, 0.78)
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   return (

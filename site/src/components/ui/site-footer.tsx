@@ -15,7 +15,8 @@ const LINKS = [
 /** Selo do patch: símbolo no centro e texto correndo em volta. */
 function Seal() {
   return (
-    <a href="#aula-experimental" aria-label="Black Wave · Brazilian Jiu Jitsu · Just Flow — agendar aula experimental" className="group relative block size-[clamp(9rem,16vw,12rem)] shrink-0">
+    <a href="#aula-experimental" className="group relative block size-[clamp(9rem,16vw,12rem)] shrink-0">
+      <span className="sr-only">Black Wave · Brazilian Jiu Jitsu · Just Flow — agendar aula experimental</span>
       <svg viewBox="0 0 200 200" className="seal-spin absolute inset-0 h-full w-full" aria-hidden="true">
         <defs>
           <path id="seal-circle" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />

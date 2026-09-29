@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 
 // Seção 3 — "O tatame" (SPEC.md §4). Vídeo de apresentação: começa numa
@@ -14,6 +15,8 @@ const VIDEO = {
 
 export function TrainingVideoSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isStatic] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches)
   const [source] = useState(() => (window.innerHeight > window.innerWidth ? VIDEO.portrait : VIDEO.landscape))
@@ -68,6 +71,7 @@ export function TrainingVideoSection() {
 
   useGSAP(
     () => {
+      if (!idleReady) return
       if (isStatic) return
       const q = gsap.utils.selector(scope.current)
       const titleWords = SplitText.create(q("[data-tatame-title]")[0], { type: "words", aria: "none" }).words
@@ -108,7 +112,7 @@ export function TrainingVideoSection() {
       tl.to(q("[data-tatame-actions]"), { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.8)
       tl.to({}, { duration: 0.15 }) // respiro antes de soltar
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   return (

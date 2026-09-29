@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap, ScrollTrigger, SplitText } from "@/lib/scroll"
 import { whatsappLink } from "@/config"
 import { Viewer360 } from "./viewer-360"
@@ -24,6 +25,8 @@ const MARQUEE = "BLACK WAVE BRAZILIAN JIU JITSU"
 
 export function GearSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
   const [modelo, setModelo] = useState<Modelo>("Premium")
   const [cor, setCor] = useState<Cor>("Preto")
   const dir = `/gear/${modelo.toLowerCase()}-${cor === "Branco" ? "branco" : "preto"}`
@@ -31,6 +34,7 @@ export function GearSection() {
 
   useGSAP(
     () => {
+      if (!idleReady) return
       const mm = gsap.matchMedia()
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const q = gsap.utils.selector(scope.current)
@@ -78,7 +82,7 @@ export function GearSection() {
         })
       })
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   const message = `Olá, Black Wave! Tenho interesse no Kimono ${modelo} ${cor.toLowerCase()}. Pode me passar tamanhos e valores?`

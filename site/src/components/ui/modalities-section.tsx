@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap, ScrollTrigger, scrollToY, SplitText } from "@/lib/scroll"
 import type { Modalidade } from "@/config"
 import { CtaLink } from "./cta-link"
@@ -60,6 +61,8 @@ const pad = (n: number) => String(n).padStart(2, "0")
 
 export function ModalitiesSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
   const track = useRef<HTMLDivElement>(null)
   const pin = useRef<ScrollTrigger | null>(null)
   const [active, setActive] = useState(0)
@@ -188,6 +191,7 @@ export function ModalitiesSection() {
 
   useGSAP(
     () => {
+      if (!idleReady) return
       if (isStatic) return
       const q = gsap.utils.selector(scope.current)
       const el = track.current!
@@ -235,7 +239,7 @@ export function ModalitiesSection() {
         pin.current = null
       }
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   return (

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 
 // Seção 6 — Vozes do tatame (SPEC.md §4). Sem cards: um depoimento por
@@ -62,10 +63,13 @@ function BeltSignature({ faixa }: { faixa: Faixa }) {
 
 export function TestimonialsSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
   const [isStatic] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches)
 
   useGSAP(
     () => {
+      if (!idleReady) return
       if (isStatic) return
       const q = gsap.utils.selector(scope.current)
 
@@ -115,7 +119,7 @@ export function TestimonialsSection() {
         )
       }
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   return (

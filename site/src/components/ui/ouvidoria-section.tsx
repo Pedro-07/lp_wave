@@ -1,5 +1,6 @@
 import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 
 // Seção 7 — chamada para a ouvidoria anônima (SPEC.md §4). A ouvidoria em si
@@ -7,9 +8,12 @@ import { gsap, SplitText } from "@/lib/scroll"
 
 export function OuvidoriaSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
 
   useGSAP(
     () => {
+      if (!idleReady) return
       const mm = gsap.matchMedia()
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const q = gsap.utils.selector(scope.current)
@@ -33,7 +37,7 @@ export function OuvidoriaSection() {
         })
       })
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   return (

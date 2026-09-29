@@ -37,7 +37,7 @@ export function SoundGate({ onChoose, onClosed }: SoundGateProps) {
     () => {
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return
       gsap
-        .timeline({ delay: 0.3 })
+        .timeline()
         .from(root.current, { opacity: 0, duration: 0.8, ease: "power2.out" })
         .from("[data-gate-card]", { opacity: 0, y: 24, duration: 1, ease: "expo.out" }, 0.1)
         .from("[data-gate-item]", { opacity: 0, y: 12, duration: 1, ease: "expo.out", stagger: 0.07 }, 0.25)

@@ -1,5 +1,6 @@
 import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
+import { useIdleReady } from "@/lib/idle"
 import { gsap } from "@/lib/scroll"
 import { whatsappLink } from "@/config"
 
@@ -12,9 +13,12 @@ const MAPS_QUERY = ENDERECO || "São Luís, MA"
 
 export function LocationSection() {
   const scope = useRef<HTMLElement>(null)
+  /** Monta as animações num momento ocioso (ver lib/idle.ts). */
+  const idleReady = useIdleReady()
 
   useGSAP(
     () => {
+      if (!idleReady) return
       const mm = gsap.matchMedia()
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const q = gsap.utils.selector(scope.current)
@@ -33,7 +37,7 @@ export function LocationSection() {
         })
       })
     },
-    { scope },
+    { scope, dependencies: [idleReady] },
   )
 
   const label = "text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60"

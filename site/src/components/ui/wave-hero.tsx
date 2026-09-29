@@ -179,13 +179,13 @@ export function WaveHero({
           restStarted = true
           for (let i = 1; i < set.count; i++) load(i)
         }
+        // Sinais de intenção real (não "scroll": a rolagem suave dispara um ao iniciar).
+        const INTENT = ["wheel", "touchstart", "keydown", "pointerdown"] as const
         const kick = () => loadRest()
-        window.addEventListener("scroll", kick, { once: true, passive: true })
-        window.addEventListener("touchstart", kick, { once: true, passive: true })
-        const idle = window.setTimeout(loadRest, document.readyState === "complete" ? 2500 : 4000)
+        INTENT.forEach((ev) => window.addEventListener(ev, kick, { once: true, passive: true }))
+        const idle = window.setTimeout(loadRest, 6000)
         cleanups.push(() => {
-          window.removeEventListener("scroll", kick)
-          window.removeEventListener("touchstart", kick)
+          INTENT.forEach((ev) => window.removeEventListener(ev, kick))
           window.clearTimeout(idle)
         })
 
