@@ -20,8 +20,8 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Números reais (alunos, anos de tatame, títulos) — nada será inventado
 
 ## Formulário
-- [ ] Confirmar campos: nome, WhatsApp, unidade, idade, experiência
-- [ ] Destino dos dados: e-mail, Google Sheets ou WhatsApp
+- [x] Campos definidos: nome, WhatsApp, modalidade, idade, experiência (unidade dispensada — só São Luís)
+- [x] Destino: WhatsApp (mensagem montada pela gaveta)
 
 ## Assets
 - [ ] Logo e símbolo em **SVG** (pedir à Double Ace) — hoje só PNG

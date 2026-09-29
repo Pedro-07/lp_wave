@@ -24,6 +24,12 @@ export function initScroll() {
   }
 }
 
+/** Leva a página a y (via Lenis quando ativo). immediate = sem animação. */
+export function scrollToY(y: number, immediate = true) {
+  if (lenis) lenis.scrollTo(y, immediate ? { immediate: true, force: true } : { duration: 1, force: true })
+  else window.scrollTo({ top: y, behavior: immediate ? "auto" : "smooth" })
+}
+
 /** Trava/destrava a rolagem da página (usado pela tela de entrada). */
 export function setScrollLocked(value: boolean) {
   locked = value
