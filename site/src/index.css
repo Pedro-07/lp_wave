@@ -188,6 +188,35 @@ html.lenis body {
   -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
 }
 
+/* CTA do hero no fim da abertura: acende em vermelho e pulsa com calma */
+.cta-live {
+  position: relative;
+  background: var(--accent);
+  border-color: var(--accent);
+  transition: background-color 0.6s var(--ease-out), border-color 0.6s var(--ease-out);
+}
+.cta-live::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--accent);
+  pointer-events: none;
+  animation: cta-pulse 2.8s var(--ease-out) 0.6s infinite;
+  opacity: 0;
+}
+.cta-live:hover {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink-0);
+}
+@keyframes cta-pulse {
+  0% { opacity: 0.9; transform: scale(1); }
+  60%, 100% { opacity: 0; transform: scale(1.18, 1.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-live::after { animation: none; }
+}
+
 /* Indicador do botão de som */
 .eq-bar {
   height: 2px;

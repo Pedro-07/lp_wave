@@ -43,19 +43,21 @@ Conteúdo:
 - Rótulos de canto: `JIU JITSU · LIFESTYLE · COMMUNITY` (sup. esq.), `EST. 2026` (sup. dir.), `SÃO LUÍS — MA` (inf. esq.; Imperatriz removido a pedido, 2026-09-28), `ROLE` + seta (inf. centro).
 - Título (início): **Toda onda nasce de uma perturbação.**
 - Fim: símbolo desenhado + naming BLACK WAVE + slogan *Just Flow* + CTA **Agendar aula experimental** (âncora para o formulário).
-Assets: `hero-onda.mp4` (0–4,5 s do vídeo Kling — depois disso a faixa gerada por IA começa a aparecer, reencodado com todos os quadros-chave), `frames/0001–0054.webp` (mobile, 12 fps, 960 px), `poster.webp`, símbolo vetorizado (`symbol-draw.json`), `naming-white.png`, `slogan-white.png`.
+Assets: `hero-onda-h.mp4` (0–4,5 s do vídeo Kling 16:9, 1280 px, 1 MB) e `hero-onda-v.mp4` (vertical própria 720×1276, 5 s, 1,2 MB) — reprodução normal, sem scrub; `poster.webp`/`poster-p.webp`, símbolo vetorizado (`symbol-draw.json`), `naming-white`, `slogan-white`.
 Layout desktop: vídeo em tela cheia (object-fit cover), título grande alinhado à esquerda no terço inferior, rótulos pequenos espaçados nos cantos, linha de progresso vermelha de 2 px na base.
 Layout mobile: mesmo roteiro; título em 2–3 linhas; símbolo ocupa 88% da largura.
-Scroll (pin por 250% da altura, scrub 0.6, sem travar a página):
-- 0 → 0.60: vídeo 0 → 4,5 s; zoom 1 → 1.06.
-- 0 → 0.25: título perde opacidade e ganha blur (10 px), sobe 24 px.
+Abertura automática, numa etapa só (2026-09-29, a pedido: sem modal, sem precisar rolar). Sem pin: a página rola normalmente desde o início. Roteiro em unidades (1 = 7,5 s), começa quando o vídeo começa a tocar (~1,4 s após o load, para ler o título; se o navegador bloquear o vídeo, segue em 2,5 s com o pôster):
+- 0 → 0.60: vídeo toca inteiro (velocidade ajustada para caber em 4,5 s); zoom 1 → 1.06.
+- 0.16 → 0.28: título perde opacidade e ganha blur (10 px), sobe 24 px.
 - 0.50 → 0.66: overlay preto 0 → 0.92 (a onda "afunda").
 - 0.58 → 0.88: traço do símbolo se desenha (máscara SVG por segmentos); o vermelho aparece por último.
 - 0.84 → 1.00: naming, slogan e CTA entram com reveal (y 24 → 0, blur 8 → 0).
+- 1.00: ênfase no CTA — acende em vermelho de acento (`.cta-live`) com um pulso de contorno a cada 2,8 s; a linha de progresso some e a dica ROLE aparece.
+Link direto para uma seção (`/#kimonos` etc.): a abertura já aparece concluída.
 Entrada (load): rótulos e título com reveal por linha, 1.2 s, expo.out.
-Hover: CTA com botão magnético (só desktop).
-Mobile/iOS: sequência de imagens em canvas no lugar do vídeo (vertical própria em retrato).
-Reduced motion: sem pin; mostra o poster com o símbolo completo, naming, slogan e CTA.
+Hover: CTA com botão magnético (só ponteiro fino).
+Som: começa desligado (sem modal); botão SOM no canto liga/desliga e segue o relógio da abertura.
+Reduced motion: mostra o poster com o símbolo completo, naming, slogan e CTA já aceso (sem pulso).
 
 ### Seção 2 — A perturbação
 Objetivo: fazer quem lê se reconhecer em um motivo para começar, e apresentar a tese da marca (a perturbação é direcionada).
@@ -150,7 +152,7 @@ Título **Aula experimental**; campos nome, WhatsApp, modalidade (pré-marcada),
 - Modo escolhido em runtime: vídeo (ponteiro fino ≥768 px), canvas (toque ou <768 px), estático (reduced motion).
 - Verificado em Chrome headless a 1440×900 e 390×844, e com reduced motion: sem erros de console.
 - Mobile em retrato: vídeo vertical próprio (Kling std 9:16, 720×1276, `assets/hero/hero-onda-vertical-v1.mp4`) → `frames-p/` 50 quadros a 10 fps (3,5 MB) + `poster-p.webp`. Paisagem/tablet segue com `frames/` (54 quadros do vídeo 16:9).
-- Som (2026-09-28): mar sintetizado em Web Audio (`site/src/lib/ocean-sound.ts`), sem arquivo. Modal de som (`sound-gate.tsx`, diálogo em portal sobre o hero — fundo escurecido com blur leve, cartão central no desktop e na base no celular; o hero abre normalmente por trás): citação de Jostein Gaarder (abertura do manual) + "Toque/Clique em qualquer lugar e entre ouvindo o mar." + "Entrar sem som". Toque em qualquer ponto ou Enter/Espaço = com som; Esc/"Entrar sem som" = sem som (salvo em localStorage bw-sound, e a tela não volta). Rolagem travada enquanto aberta; Botão "SOM" no canto sup. dir. liga/desliga depois. Som segue o progresso suavizado da timeline (mesmo relógio da imagem); quebra em 0.5, junto do escurecimento. Grave + espuma com LFOs; intensidade segue o scroll (cresce até 0.45, estouro de quebra em 0.42, assenta no símbolo, silencia ao sair do hero ou trocar de aba). Pico medido 0,55, RMS −17 dBFS.
+- Som (2026-09-28): mar sintetizado em Web Audio (`site/src/lib/ocean-sound.ts`), sem arquivo. [REMOVIDO em 2026-09-29 — hoje o som começa desligado e só o botão SOM liga] Modal de som (`sound-gate.tsx`, diálogo em portal sobre o hero — fundo escurecido com blur leve, cartão central no desktop e na base no celular; o hero abre normalmente por trás): citação de Jostein Gaarder (abertura do manual) + "Toque/Clique em qualquer lugar e entre ouvindo o mar." + "Entrar sem som". Toque em qualquer ponto ou Enter/Espaço = com som; Esc/"Entrar sem som" = sem som (salvo em localStorage bw-sound, e a tela não volta). Rolagem travada enquanto aberta; Botão "SOM" no canto sup. dir. liga/desliga depois. Som segue o progresso suavizado da timeline (mesmo relógio da imagem); quebra em 0.5, junto do escurecimento. Grave + espuma com LFOs; intensidade segue o scroll (cresce até 0.45, estouro de quebra em 0.42, assenta no símbolo, silencia ao sair do hero ou trocar de aba). Pico medido 0,55, RMS −17 dBFS.
 - SEO (2026-09-28): title/description focados em "Jiu-Jitsu em São Luís – MA"; Open Graph + Twitter com `og-image.jpg` 1200×630; JSON-LD `SportsClub` (sem endereço de rua/telefone até o cliente informar); canonical/URLs via `VITE_SITE_URL` em `site/.env`; robots.txt; apple-touch-icon; `<noscript>` com h1 e descrição.
 - Seção 2 v2 (2026-09-28): implementada em `perturbation-section.tsx`. Faixa A do Higgsfield (`assets/faixa/faixa-A.png`, fundo transparente) recolorida offline em 5 WebP (`site/public/faixa/`, 2000 e 1000 px) e empilhada com máscara `.belt-wipe` (--wipe 100% → 0%). Pin de 7,5 passos × 70vh, snap sem inércia (a inércia jogava a rolagem para o início/fim e pulava frases). Frases escondidas a 120% (acentos das maiúsculas vazavam a 100%). Verificado a 1440 e 390 px e com reduced motion.
 - Ajuste (2026-09-28): janelas das frases com folga (pt 0.25em / pb 0.15em, compensadas por margem negativa) para não cortar acentos; frases fora de cena com autoAlpha 0 e deslocamento de 140% — em repouso só a frase atual é visível (medido em todos os passos, 1440 e 390 px).
