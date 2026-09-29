@@ -4,7 +4,7 @@ import { gsap, ScrollTrigger, SplitText } from "@/lib/scroll"
 import { whatsappLink } from "@/config"
 import { Viewer360 } from "./viewer-360"
 
-// Seção 5 — Gear (SPEC.md §4). Divisória "GEAR" com texto corrido do patch
+// Seção 5 — Kimonos (SPEC.md §4). Divisória "KIMONOS" com texto corrido do patch
 // e, em seguida, o kimono em 360° (wow nº 3): Basic/Premium × Branco/Preto.
 // A venda é concluída no WhatsApp com a mensagem pronta.
 
@@ -88,14 +88,14 @@ export function GearSection() {
     (on ? "bg-paper text-ink" : "text-paper/70 hover:text-paper")
 
   return (
-    <section ref={scope} id="gear" aria-labelledby="gear-titulo" className="relative bg-ink text-paper">
+    <section ref={scope} id="kimonos" aria-labelledby="kimonos-titulo" className="relative bg-ink text-paper">
       {/* Divisória */}
       <div data-gear-divider aria-hidden="true" className="relative overflow-hidden border-y border-paper/10 py-[clamp(2rem,6vw,5rem)]">
         <p
           data-gear-word
-          className="gear-word text-center font-display text-[clamp(7rem,30vw,28rem)] leading-[0.8] font-extrabold uppercase"
+          className="gear-word text-center font-display text-[clamp(4.5rem,19vw,19rem)] leading-[0.8] font-extrabold uppercase"
         >
-          Gear
+          Kimonos
         </p>
         <div className="absolute inset-x-0 bottom-[clamp(1rem,3vw,2.5rem)] overflow-hidden">
           <div data-marquee-track className="flex w-max text-[length:var(--fs-label)] tracking-[0.5em] text-paper/60">
@@ -114,10 +114,10 @@ export function GearSection() {
 
       <div className="px-[var(--gutter)] pt-[clamp(4rem,10vw,8rem)] pb-[var(--space-section)]">
         <p className={label + " mb-6"}>
-          <span className="text-accent">05</span> — Gear
+          <span className="text-accent">05</span> — Kimonos
         </p>
         <h2
-          id="gear-titulo"
+          id="kimonos-titulo"
           data-gear-title
           className="font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92] tracking-[-0.01em]"
         >

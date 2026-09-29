@@ -7,7 +7,7 @@ import symbol from "./symbol-draw.json"
 
 const LINKS = [
   { href: "#modalidades", label: "Modalidades" },
-  { href: "#gear", label: "Gear" },
+  { href: "#kimonos", label: "Kimonos" },
   { href: "#vozes", label: "Vozes do tatame" },
   { href: "/ouvidoria/", label: "Ouvidoria" },
 ]
