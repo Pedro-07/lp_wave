@@ -7,8 +7,29 @@ import symbol from "./symbol-draw.json"
 // animar strokeDashoffset segmento a segmento sem revelar partes vizinhas.
 // Os elementos animáveis levam data-pen="main" | "branch" e data-len.
 
-export const SYMBOL_BRANCH_AT = symbol.branchAt
-export const SYMBOL_MAIN_LENGTH = symbol.main.reduce((sum, s) => sum + s.len, 0)
+const SYMBOL_BRANCH_AT = symbol.branchAt
+const SYMBOL_MAIN_LENGTH = symbol.main.reduce((sum, s) => sum + s.len, 0)
+
+/**
+ * Adiciona à timeline o desenho do símbolo que está dentro de `root`, com
+ * velocidade de caneta constante: começa em `start` e dura `duration`.
+ */
+export function addSymbolDraw(tl: gsap.core.Timeline, root: Element, start: number, duration: number) {
+  let t = start
+  for (const seg of root.querySelectorAll<SVGPathElement>('[data-pen="main"]')) {
+    const dur = (Number(seg.dataset.len) / SYMBOL_MAIN_LENGTH) * duration
+    tl.set(seg, { opacity: 1 }, t)
+    tl.to(seg, { strokeDashoffset: 0, duration: dur, ease: "none" }, t)
+    t += dur
+  }
+  let tb = start + SYMBOL_BRANCH_AT * duration
+  for (const seg of root.querySelectorAll<SVGPathElement>('[data-pen="branch"]')) {
+    const dur = (Number(seg.dataset.len) / SYMBOL_MAIN_LENGTH) * duration
+    tl.set(seg, { opacity: 1 }, tb)
+    tl.to(seg, { strokeDashoffset: 0, duration: dur, ease: "none" }, tb)
+    tb += dur
+  }
+}
 
 interface SymbolDrawProps {
   className?: string

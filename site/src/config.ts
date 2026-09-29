@@ -2,6 +2,8 @@
 
 /** WhatsApp com DDI + DDD, só números. Provisório (cliente, 2026-09-29): (98) 98855-8687. */
 export const WHATSAPP_NUMBER = "5598988558687"
+/** Mesmo número, formatado para exibição. */
+export const WHATSAPP_DISPLAY = "(98) 98855-8687"
 
 /**
  * Link do WhatsApp com mensagem pronta. Sem número configurado, o wa.me abre o

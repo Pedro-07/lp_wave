@@ -4,7 +4,7 @@ import { OceanSound } from "@/lib/ocean-sound"
 import { gsap, SplitText } from "@/lib/scroll"
 import { CtaLink } from "./cta-link"
 import { SoundGate } from "./sound-gate"
-import { SymbolDraw, SYMBOL_BRANCH_AT, SYMBOL_MAIN_LENGTH } from "./symbol-draw"
+import { addSymbolDraw, SymbolDraw } from "./symbol-draw"
 
 // Hero "Onda → Símbolo" — SPEC.md §4, Seção 1.
 // Inspirado no MetroHero (21st.dev), mas sem travar a página: a seção é
@@ -234,22 +234,7 @@ export function WaveHero({
       tl.to(q("[data-shade]"), { opacity: 0.92, duration: 0.16 }, 0.5)
 
       // Traço do símbolo: velocidade de caneta constante ao longo da linha.
-      const DRAW_START = 0.58
-      const DRAW_DUR = 0.3
-      let t = DRAW_START
-      for (const seg of q('[data-pen="main"]')) {
-        const dur = (Number(seg.dataset.len) / SYMBOL_MAIN_LENGTH) * DRAW_DUR
-        tl.set(seg, { opacity: 1 }, t)
-        tl.to(seg, { strokeDashoffset: 0, duration: dur }, t)
-        t += dur
-      }
-      let tb = DRAW_START + SYMBOL_BRANCH_AT * DRAW_DUR
-      for (const seg of q('[data-pen="branch"]')) {
-        const dur = (Number(seg.dataset.len) / SYMBOL_MAIN_LENGTH) * DRAW_DUR
-        tl.set(seg, { opacity: 1 }, tb)
-        tl.to(seg, { strokeDashoffset: 0, duration: dur }, tb)
-        tb += dur
-      }
+      addSymbolDraw(tl, root, 0.58, 0.3)
 
       tl.to(endItems, { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.1, stagger: 0.03, ease: "power2.out" }, 0.84)
       tl.fromTo(q("[data-progress]"), { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0)
