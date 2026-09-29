@@ -4,19 +4,18 @@ import { gsap, SplitText } from "@/lib/scroll"
 import symbol from "./symbol-draw.json"
 import { CtaLink } from "./cta-link"
 
-// Seção 2 — "Da perturbação à faixa preta" (SPEC.md §4, v2).
-// A seção fica fixa (pin) e a rolagem avança uma frase por vez, com encaixe
-// em cada uma. Uma faixa atravessa a tela e vai sendo graduada — branca, azul,
-// roxa, marrom, preta — por uma "tinta" que corre no tecido. As 5 cores são a
-// mesma foto recolorida (public/faixa), então o formato nunca muda.
+// Seção 2 — "Da perturbação à faixa preta" (SPEC.md §4, v3).
+// A seção fica fixa (pin) e a rolagem avança um passo por vez, com encaixe:
+// abertura → 5 motivos (um por faixa) → fecho. Cada cena entra palavra a
+// palavra (sobe, ganha foco) enquanto a faixa é tingida da cor seguinte.
+// As 5 cores são a mesma foto recolorida (public/faixa): o formato nunca muda.
 
+/** Um motivo por faixa, na ordem da graduação. */
 const MOTIVES = [
   "Vontade de evoluir.",
   "Superar um limite.",
   "Confiança.",
   "Pertencer.",
-  "Saúde.",
-  "Competir.",
   "Reconstruir a autoestima.",
 ]
 
@@ -27,17 +26,17 @@ const BELTS = [
   { key: "marrom", name: "Marrom" },
   { key: "preta", name: "Preta" },
 ]
-/** Faixa de cada motivo (índice em BELTS): progressão contínua até a preta. */
-const BELT_OF_MOTIVE = [0, 0, 1, 2, 3, 3, 4]
 
-/** Duração do roteiro, em "passos": 7 motivos + fecho + respiro final. */
-const TOTAL = MOTIVES.length + 0.5
+/** Passos: 0 abertura, 1–5 motivos, 6 fecho; +0.5 de respiro antes de soltar. */
+const CLOSING_STEP = MOTIVES.length + 1
+const TOTAL = CLOSING_STEP + 0.5
 /** Rolagem por passo, em fração da altura da tela. */
 const STEP_VH = 0.7
 
 const pad = (n: number) => String(n).padStart(2, "0")
 const beltSrcSet = (key: string) => `/faixa/faixa-${key}-m.webp 1000w, /faixa/faixa-${key}.webp 2000w`
 const BELT_SIZES = "(max-width: 1023px) 190vw, 106vw"
+const DISPLAY = "font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92] tracking-[-0.01em]"
 
 function Belt({ layer = "all" }: { layer?: "all" | "preta" }) {
   const belts = layer === "all" ? BELTS : BELTS.slice(-1)
@@ -69,23 +68,38 @@ export function PerturbationSection() {
       if (isStatic) return
       const q = gsap.utils.selector(scope.current)
       const stage = q("[data-stage]")[0]
-      const motives = q("[data-motive]")
-      const closingLines = q("[data-closing-line]")
       const layers = q("[data-belt-layer]")
       const counter = q("[data-counter]")[0]
       const beltName = q("[data-belt-name]")[0]
+      const inner = q("[data-belt-inner]")
 
-      // Entrada do cabeçalho
-      for (const el of q("[data-reveal-lines]")) {
-        const split = SplitText.create(el, { type: "lines", mask: "lines" })
-        gsap.from(split.lines, {
-          yPercent: 100,
-          duration: 1.2,
-          ease: "expo.out",
-          stagger: 0.08,
-          scrollTrigger: { trigger: el, start: "top 85%" },
-        })
-      }
+      // Palavras de cada cena (abertura, motivos, fecho). Sem máscara: nada
+      // corta os acentos; o que está fora de cena fica com autoAlpha 0.
+      const words = (el: Element) => SplitText.create(el, { type: "words" }).words
+      const intro = q("[data-scene-intro] [data-words]").flatMap(words)
+      const motives = q("[data-motive]").map(words)
+      const closing = q("[data-closing] [data-words]").flatMap(words)
+
+      const hidden = { yPercent: 60, autoAlpha: 0, filter: "blur(10px)" }
+      const shown = { yPercent: 0, autoAlpha: 1, filter: "blur(0px)" }
+      gsap.set([...motives.flat(), ...closing], hidden)
+      gsap.set(q("[data-belt]"), { xPercent: -110, autoAlpha: 0 })
+      gsap.set(q("[data-counter-row]"), { autoAlpha: 0, y: 10 })
+      gsap.set(layers, { "--wipe": "100%" })
+
+      // Abertura: entra quando a seção chega na tela. Anima os blocos (título e
+      // apoio), nunca as palavras — essas são só da timeline de rolagem; se as
+      // duas mexessem nas mesmas palavras, chegar direto a um passo adiante
+      // (rolagem rápida, recarregar no meio) traria a abertura de volta.
+      gsap.from(q("[data-scene-intro] [data-words]"), {
+        autoAlpha: 0,
+        yPercent: 20,
+        filter: "blur(10px)",
+        duration: 1.1,
+        ease: "expo.out",
+        stagger: 0.12,
+        scrollTrigger: { trigger: stage, start: "top 70%" },
+      })
       gsap.from(q("[data-rise]"), {
         autoAlpha: 0,
         y: 24,
@@ -95,17 +109,8 @@ export function PerturbationSection() {
         scrollTrigger: { trigger: q("[data-rise]")[0], start: "top 88%" },
       })
 
-      // Estado inicial. 140% (não 100%): a janela tem folga para os acentos das
-      // maiúsculas, então a frase precisa sair além dela.
-      const HIDE = 140
-      // Além do deslocamento, as frases fora de cena ficam invisíveis (autoAlpha 0):
-      // nada da próxima frase aparece antes da rolagem chegar nela.
-      gsap.set(motives.slice(1), { yPercent: HIDE, autoAlpha: 0 })
-      gsap.set(closingLines, { yPercent: HIDE, autoAlpha: 0 })
-      gsap.set(layers, { "--wipe": "100%" })
-
-      // Pontos de encaixe: cada frase inteira + fecho + fim.
-      const points = [...Array.from({ length: MOTIVES.length + 1 }, (_, i) => i / TOTAL), 1]
+      // Pontos de encaixe: cada passo inteiro + fim.
+      const points = [...Array.from({ length: CLOSING_STEP + 1 }, (_, i) => i / TOTAL), 1]
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -117,7 +122,7 @@ export function PerturbationSection() {
           scrub: 0.6,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          // Sem inércia: o encaixe vai para a frase mais próxima na direção da
+          // Sem inércia: o encaixe vai para o passo mais próximo na direção da
           // rolagem, em vez de projetar pela velocidade (o que pulava frases).
           snap: {
             snapTo: points,
@@ -130,34 +135,43 @@ export function PerturbationSection() {
         },
       })
 
-      // Troca de frases: a entrada de k ocupa a 2ª metade do passo [k-0.5, k].
-      for (let k = 1; k < MOTIVES.length; k++) {
-        tl.to(motives[k - 1], { yPercent: -HIDE, autoAlpha: 0, duration: 0.45, ease: "power2.in" }, k - 0.5)
-        tl.to(motives[k], { yPercent: 0, autoAlpha: 1, duration: 0.45, ease: "power2.out" }, k - 0.45)
+      // Troca de cena no passo k: a anterior sai (sobe e desfoca) e a nova
+      // entra palavra a palavra, tudo dentro de [k-0.55, k].
+      const scenes = [intro, ...motives, closing]
+      for (let k = 1; k < scenes.length; k++) {
+        const prev = scenes[k - 1]
+        const next = scenes[k]
+        tl.to(
+          prev,
+          { yPercent: -50, autoAlpha: 0, filter: "blur(8px)", duration: 0.22, stagger: 0.12 / prev.length, ease: "power2.in" },
+          k - 0.55,
+        )
+        tl.to(next, { ...shown, duration: 0.3, stagger: 0.16 / next.length, ease: "power3.out" }, k - 0.3)
       }
-      const last = MOTIVES.length
-      tl.to(motives[last - 1], { yPercent: -HIDE, autoAlpha: 0, duration: 0.45, ease: "power2.in" }, last - 0.5)
-      tl.to(closingLines, { yPercent: 0, autoAlpha: 1, duration: 0.4, ease: "power2.out", stagger: 0.05 }, last - 0.45)
 
-      // Graduação: cada camada de cor "tinge" a faixa no passo em que aparece.
+      // Faixa: desliza para a cena com o 1º motivo; a cada motivo seguinte a
+      // cor nova corre pelo tecido e a faixa dá um leve pulso.
+      tl.to(q("[data-belt]"), { xPercent: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out" }, 0.45)
+      tl.to(q("[data-counter-row]"), { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.7)
       layers.forEach((layer, i) => {
-        const k = BELT_OF_MOTIVE.indexOf(i + 1)
-        tl.to(layer, { "--wipe": "0%", duration: 0.6, ease: "power1.inOut" }, k - 0.6)
+        const k = i + 2 // camada 1 (azul) chega com o 2º motivo
+        tl.to(layer, { "--wipe": "0%", duration: 0.5, ease: "power1.inOut" }, k - 0.55)
+        tl.to(inner, { scale: 1.025, duration: 0.2, ease: "power1.out" }, k - 0.5)
+        tl.to(inner, { scale: 1, duration: 0.3, ease: "power1.inOut" }, k - 0.3)
       })
 
       // Parallax
-      tl.fromTo(q("[data-belt]"), { xPercent: -2, rotate: -0.6 }, { xPercent: 2, rotate: 0.6, duration: TOTAL }, 0)
+      tl.fromTo(inner, { xPercent: -2, rotate: -0.6 }, { xPercent: 2, rotate: 0.6, duration: TOTAL }, 0)
       tl.fromTo(q("[data-bg-symbol]"), { yPercent: 12 }, { yPercent: -12, duration: TOTAL }, 0)
-      tl.fromTo(q("[data-motive-stage]"), { y: 20 }, { y: -20, duration: TOTAL }, 0)
 
       // Contador e nome da faixa
-      let shown = -1
+      let shownIdx = -1
       tl.eventCallback("onUpdate", () => {
-        const idx = Math.min(MOTIVES.length - 1, Math.max(0, Math.floor(tl.time() + 0.25)))
-        if (idx === shown) return
-        shown = idx
+        const idx = Math.min(MOTIVES.length - 1, Math.max(0, Math.floor(tl.time() + 0.3) - 1))
+        if (idx === shownIdx) return
+        shownIdx = idx
         counter.textContent = pad(idx + 1)
-        beltName.textContent = BELTS[BELT_OF_MOTIVE[idx]].name
+        beltName.textContent = BELTS[idx].name
       })
     },
     { scope },
@@ -168,7 +182,7 @@ export function PerturbationSection() {
       {isStatic ? (
         <StaticVersion />
       ) : (
-        <div data-stage className="relative h-svh overflow-hidden">
+        <div data-stage className="relative flex h-svh flex-col overflow-hidden px-[var(--gutter)] pt-[clamp(1.5rem,6vh,4rem)]">
           {/* Contorno do símbolo ao fundo */}
           <svg
             data-bg-symbol
@@ -179,68 +193,62 @@ export function PerturbationSection() {
             <path d={symbol.black} fill="none" stroke="#fff" strokeWidth={3} vectorEffect="non-scaling-stroke" />
           </svg>
 
-          <div className="relative flex h-full flex-col px-[var(--gutter)] pt-[clamp(5rem,12vh,8rem)] lg:grid lg:grid-cols-12 lg:gap-x-[var(--gutter)] lg:pt-0">
-            {/* Cabeçalho */}
-            <header className="lg:col-span-4 lg:self-center lg:pb-[22vh]">
-              <p className="mb-6 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60 lg:mb-8">
-                <span className="text-accent">02</span> — A perturbação
-              </p>
-              <h2
-                id="perturbacao-titulo"
-                data-reveal-lines
-                className="font-display text-[length:var(--fs-h2)] font-extrabold uppercase leading-[0.95] tracking-[-0.01em]"
-              >
-                Todo mundo chega com alguma coisa.
-              </h2>
-              <p data-reveal-lines className="mt-5 max-w-[30ch] text-[length:var(--fs-body)] leading-relaxed text-paper/70 lg:mt-8">
-                Ninguém pisa no tatame por acaso. Cada um traz uma inquietação.
-              </p>
-            </header>
+          <p className="relative text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60">
+            <span className="text-accent">02</span> — A perturbação
+          </p>
 
-            {/* Frases */}
-            <div className="mt-[8vh] lg:col-span-8 lg:mt-0 lg:self-center lg:pb-[22vh]">
-              <p className="mb-5 flex items-baseline gap-3 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60" aria-hidden="true">
-                <span>
-                  <span data-counter className="text-paper">01</span> / {pad(MOTIVES.length)}
-                </span>
-                <span className="h-px w-8 bg-paper/30" />
-                <span>
-                  Faixa <span data-belt-name>Branca</span>
-                </span>
-              </p>
-              {/* Cada frase fica numa "janela" (overflow-hidden) com folga de
-                  0.25em em cima e 0.15em embaixo — compensada por margem negativa —
-                  para os acentos das maiúsculas (É, Ú, Ã) não serem cortados. */}
-              <div
-                data-motive-stage
-                className="grid font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92] tracking-[-0.01em]"
-              >
-                {MOTIVES.map((m) => (
-                  <p key={m} className="col-start-1 row-start-1 -mt-[0.25em] -mb-[0.15em] overflow-hidden pt-[0.25em] pb-[0.15em]">
-                    {/* h-full: a frase ocupa a janela toda (altura do maior item),
-                        então o deslocamento a tira inteira da máscara. */}
-                    <span data-motive className="block h-full">
+          {/* Palco: abertura, motivos e fecho ocupam o mesmo lugar, um de cada vez */}
+          <div className="relative flex flex-1 items-center pb-[22vh] lg:pb-[26vh]">
+            <div className="grid w-full lg:w-[min(100%,78rem)]">
+              <div data-scene-intro className="col-start-1 row-start-1 self-center">
+                <h2 id="perturbacao-titulo" data-words className={DISPLAY + " max-w-[13ch]"}>
+                  Todo mundo chega com alguma coisa.
+                </h2>
+                <p data-words className="mt-6 max-w-[32ch] text-[length:var(--fs-body)] leading-relaxed text-paper/70 lg:mt-8">
+                  Ninguém pisa no tatame por acaso. Cada um traz uma inquietação.
+                </p>
+              </div>
+
+              <div className="col-start-1 row-start-1 self-center">
+                <p
+                  data-counter-row
+                  aria-hidden="true"
+                  className="mb-5 flex items-baseline gap-3 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60"
+                >
+                  <span>
+                    <span data-counter className="text-paper">
+                      01
+                    </span>{" "}
+                    / {pad(MOTIVES.length)}
+                  </span>
+                  <span className="h-px w-8 bg-paper/30" />
+                  <span>
+                    Faixa <span data-belt-name>Branca</span>
+                  </span>
+                </p>
+                <div className="grid">
+                  {MOTIVES.map((m) => (
+                    <p key={m} data-motive aria-hidden="true" className={DISPLAY + " col-start-1 row-start-1 max-w-[16ch]"}>
                       {m}
-                    </span>
-                  </p>
-                ))}
-                <h2 className="col-start-1 row-start-1">
-                  <span className="-mt-[0.25em] -mb-[0.15em] block overflow-hidden pt-[0.25em] pb-[0.15em]">
-                    <span data-closing-line className="block text-paper/40">
+                    </p>
+                  ))}
+                  <h2 data-closing className={DISPLAY + " col-start-1 row-start-1"}>
+                    <span data-words className="block text-paper/40">
                       Aqui, ela não é evitada.
                     </span>
-                  </span>
-                  <span className="-mt-[0.25em] -mb-[0.15em] block overflow-hidden pt-[0.25em] pb-[0.15em]">
-                    <span data-closing-line className="block">
+                    <span data-words className="block">
                       É direcionada.
                     </span>
-                  </span>
-                </h2>
+                  </h2>
+                </div>
               </div>
-              {/* Lista completa para leitores de tela */}
+
+              {/* Lista para leitores de tela (as frases animadas são aria-hidden) */}
               <ul className="sr-only">
-                {MOTIVES.map((m) => (
-                  <li key={m}>{m}</li>
+                {MOTIVES.map((m, i) => (
+                  <li key={m}>
+                    {m} (faixa {BELTS[i].name.toLowerCase()})
+                  </li>
                 ))}
               </ul>
             </div>
@@ -251,7 +259,9 @@ export function PerturbationSection() {
             data-belt
             className="pointer-events-none absolute bottom-[7vh] -left-[95vw] w-[190vw] lg:bottom-[6vh] lg:-left-[6vw] lg:w-[106vw]"
           >
-            <Belt />
+            <div data-belt-inner>
+              <Belt />
+            </div>
           </div>
         </div>
       )}

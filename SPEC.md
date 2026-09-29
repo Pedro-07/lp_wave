@@ -63,7 +63,7 @@ Conteúdo (aprovado 2026-09-28, base: "A Filosofia da Marca" do manual):
 - Rótulo: `02 — A perturbação`
 - Título: **Todo mundo chega com alguma coisa.**
 - Apoio: Ninguém pisa no tatame por acaso. Cada um traz uma inquietação.
-- Lista: Vontade de evoluir. / Superar um limite. / Confiança. / Pertencer. / Saúde. / Competir. / Reconstruir a autoestima.
+- Lista (v3, 5 motivos — 1 por faixa): Vontade de evoluir. (branca) / Superar um limite. (azul) / Confiança. (roxa) / Pertencer. (marrom) / Reconstruir a autoestima. (preta). Saíram "Saúde." e "Competir." a pedido do cliente.
 - Fecho: **Aqui, ela não é evitada. É direcionada.**
 - Texto: A Black Wave existe para formar faixas pretas saudáveis, com excelência técnica e caráter sólido. Gente preparada para gerar impacto positivo na sociedade.
 - CTA: Agendar aula experimental → `#aula-experimental`
@@ -106,3 +106,4 @@ Motivo da v2: na v1 (lista livre) rolagens rápidas pulavam frases — sem contr
 - SEO (2026-09-28): title/description focados em "Jiu-Jitsu em São Luís – MA"; Open Graph + Twitter com `og-image.jpg` 1200×630; JSON-LD `SportsClub` (sem endereço de rua/telefone até o cliente informar); canonical/URLs via `VITE_SITE_URL` em `site/.env`; robots.txt; apple-touch-icon; `<noscript>` com h1 e descrição.
 - Seção 2 v2 (2026-09-28): implementada em `perturbation-section.tsx`. Faixa A do Higgsfield (`assets/faixa/faixa-A.png`, fundo transparente) recolorida offline em 5 WebP (`site/public/faixa/`, 2000 e 1000 px) e empilhada com máscara `.belt-wipe` (--wipe 100% → 0%). Pin de 7,5 passos × 70vh, snap sem inércia (a inércia jogava a rolagem para o início/fim e pulava frases). Frases escondidas a 120% (acentos das maiúsculas vazavam a 100%). Verificado a 1440 e 390 px e com reduced motion.
 - Ajuste (2026-09-28): janelas das frases com folga (pt 0.25em / pb 0.15em, compensadas por margem negativa) para não cortar acentos; frases fora de cena com autoAlpha 0 e deslocamento de 140% — em repouso só a frase atual é visível (medido em todos os passos, 1440 e 390 px).
+- v3 (2026-09-29): passos 0 abertura (título + apoio sozinhos; saem quando o 1º motivo entra) → 1–5 motivos (1 por faixa; a cor nova corre pelo tecido junto com a troca de frase + leve pulso na faixa) → 6 fecho; TOTAL 6,5 × 70vh. Faixa desliza para a cena com o 1º motivo. Transição por palavras (SplitText words, sem máscara): saída sobe 50% e desfoca, entrada sobe de 60% e ganha foco. A entrada da abertura anima os blocos, nunca as palavras (evita conflito com a timeline ao chegar direto num passo adiante). Testado: salto direto p/ passos 1 e 3, rodinha rápida, ida e volta — sempre 1 cena visível.
