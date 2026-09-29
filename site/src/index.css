@@ -37,6 +37,7 @@
   --paper: #ffffff;
   --accent: #dc0000;
   --accent-logo: #fd002a;
+  --accent-text: #ff4d4d; /* vermelho só para TEXTO sobre preto (contraste 6,4:1; o #dc0000 dá 4:1) */
   --accent-2: #6666ff;
   --grey: #666666;
 
@@ -149,6 +150,12 @@ html.lenis body {
 .voice-index {
   color: transparent;
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+}
+
+/* Texto em vermelho: tom mais claro para ter contraste AA sobre o preto.
+   Faixas, botões e símbolo continuam com o vermelho oficial (--accent). */
+.text-accent {
+  color: var(--accent-text);
 }
 
 /* Localização: cidade vazada + mapa escuro P&B */

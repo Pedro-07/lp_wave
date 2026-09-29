@@ -46,7 +46,7 @@ export function OuvidoriaPage() {
   useGSAP(
     () => {
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return
-      gsap.from("[data-rise]", { y: 24, autoAlpha: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, delay: 0.1 })
+      gsap.from("[data-rise]", { y: 24, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, delay: 0.1 })
     },
     { scope },
   )
@@ -60,7 +60,7 @@ export function OuvidoriaPage() {
     <main ref={scope} className="grain min-h-svh bg-ink px-[var(--gutter)] pt-[clamp(1.5rem,4vw,3rem)] pb-[var(--space-section)] text-paper">
       <header className="flex items-center justify-between">
         <a href="/" aria-label="Black Wave — voltar ao site">
-          <img src="/brand/naming-white.webp" alt="Black Wave" className="w-[clamp(8rem,14vw,11rem)]" />
+          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-[clamp(8rem,14vw,11rem)]" />
         </a>
         <a href="/" className={label + " transition-colors hover:text-paper"}>
           ← Voltar ao site

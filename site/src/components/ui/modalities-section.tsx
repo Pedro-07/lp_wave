@@ -192,7 +192,7 @@ export function ModalitiesSection() {
       const q = gsap.utils.selector(scope.current)
       const el = track.current!
 
-      const words = SplitText.create(q("[data-mods-title]")[0], { type: "words" }).words
+      const words = SplitText.create(q("[data-mods-title]")[0], { type: "words", aria: "none" }).words
       gsap.from(words, {
         yPercent: 60,
         autoAlpha: 0,
@@ -204,7 +204,7 @@ export function ModalitiesSection() {
       })
       gsap.from(q("[data-mod]"), {
         x: 80,
-        autoAlpha: 0,
+        opacity: 0,
         duration: 1.2,
         ease: "expo.out",
         stagger: 0.08,

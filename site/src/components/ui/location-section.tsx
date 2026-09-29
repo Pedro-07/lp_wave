@@ -25,7 +25,7 @@ export function LocationSection() {
         )
         gsap.from(q("[data-loc-rise]"), {
           y: 24,
-          autoAlpha: 0,
+          opacity: 0,
           duration: 1,
           ease: "expo.out",
           stagger: 0.08,

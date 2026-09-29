@@ -58,7 +58,7 @@ export function GearSection() {
           },
         })
 
-        const words = SplitText.create(q("[data-gear-title]")[0], { type: "words" }).words
+        const words = SplitText.create(q("[data-gear-title]")[0], { type: "words", aria: "none" }).words
         gsap.from(words, {
           yPercent: 60,
           autoAlpha: 0,
@@ -70,7 +70,7 @@ export function GearSection() {
         })
         gsap.from(q("[data-gear-info] > *"), {
           y: 24,
-          autoAlpha: 0,
+          opacity: 0,
           duration: 1,
           ease: "expo.out",
           stagger: 0.08,

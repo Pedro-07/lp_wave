@@ -79,7 +79,7 @@ export function OuvidoriaAdmin() {
             }
           }}
         >
-          <img src="/brand/naming-white.webp" alt="Black Wave" className="w-44" />
+          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-44" />
           <p className={label}>Gestão da ouvidoria</p>
           <input
             name="senha"
@@ -104,7 +104,7 @@ export function OuvidoriaAdmin() {
     <main className="min-h-svh bg-ink px-[var(--gutter)] py-8 text-paper">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-paper/10 pb-6">
         <div className="flex items-center gap-4">
-          <img src="/brand/naming-white.webp" alt="Black Wave" className="w-36" />
+          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-36" />
           <p className={label}>Gestão da ouvidoria</p>
         </div>
         <div className="flex items-center gap-3">

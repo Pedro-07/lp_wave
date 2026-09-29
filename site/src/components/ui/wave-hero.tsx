@@ -158,16 +158,44 @@ export function WaveHero({
         const canvas = canvasRef.current!
         const ctx = canvas.getContext("2d")!
         const set = window.innerHeight > window.innerWidth ? FRAME_SETS.portrait : FRAME_SETS.landscape
-        const images = Array.from({ length: set.count }, (_, i) => {
+        // Só o 1º quadro entra no carregamento inicial; os demais vêm quando a
+        // pessoa começa a rolar (ou logo depois que a página termina de carregar),
+        // para não disputar rede e processador com a primeira tela do celular.
+        const images: HTMLImageElement[] = []
+        const load = (i: number) => {
           const img = new Image()
           img.decoding = "async"
+          img.onload = () => {
+            if (i === current || !ready(images[current])) draw()
+          }
           img.src = frameSrc(set.dir, i)
-          return img
+          images[i] = img
+        }
+        const ready = (img?: HTMLImageElement) => Boolean(img?.complete && img.naturalWidth)
+        load(0)
+        let restStarted = false
+        const loadRest = () => {
+          if (restStarted) return
+          restStarted = true
+          for (let i = 1; i < set.count; i++) load(i)
+        }
+        const kick = () => loadRest()
+        window.addEventListener("scroll", kick, { once: true, passive: true })
+        window.addEventListener("touchstart", kick, { once: true, passive: true })
+        const idle = window.setTimeout(loadRest, document.readyState === "complete" ? 2500 : 4000)
+        cleanups.push(() => {
+          window.removeEventListener("scroll", kick)
+          window.removeEventListener("touchstart", kick)
+          window.clearTimeout(idle)
         })
+
         let current = 0
         const draw = () => {
-          const img = images[current]
-          if (!img.complete || !img.naturalWidth) return
+          // Quadro pedido ainda não chegou? Mostra o carregado mais próximo antes dele.
+          let k = current
+          while (k > 0 && !ready(images[k])) k--
+          const img = images[k]
+          if (!ready(img)) return
           const cw = canvas.width
           const ch = canvas.height
           const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight)
@@ -184,10 +212,10 @@ export function WaveHero({
           canvas.height = Math.round(canvas.clientHeight * dpr)
           draw()
         }
-        images[0].onload = () => {
+        images[0].addEventListener("load", () => {
           setMediaReady(true)
           resize()
-        }
+        })
         resize()
         window.addEventListener("resize", resize)
         cleanups.push(() => window.removeEventListener("resize", resize))
@@ -268,9 +296,9 @@ export function WaveHero({
     () => {
       if (mode === "static") return
       const q = gsap.utils.selector(scope.current)
-      const split = SplitText.create(q("[data-title]")[0], { type: "lines", mask: "lines" })
+      const split = SplitText.create(q("[data-title]")[0], { type: "lines", mask: "lines", aria: "none" })
       gsap.from(split.lines, { yPercent: 100, duration: 1.2, ease: "expo.out", stagger: 0.08, delay: 0.35 })
-      gsap.from(q("[data-label]"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out", stagger: 0.06, delay: 0.6 })
+      gsap.from(q("[data-label]"), { opacity: 0, y: 12, duration: 1, ease: "expo.out", stagger: 0.06, delay: 0.6 })
     },
     { scope, dependencies: [mode] },
   )
@@ -379,10 +407,10 @@ export function WaveHero({
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-[clamp(1.25rem,3vh,2.25rem)] px-[var(--gutter)] [&_a]:pointer-events-auto">
         <SymbolDraw complete={isStatic} className="w-[min(88vw,1080px)]" />
         <div data-end-item className="flex flex-col items-center gap-3">
-          <img src="/brand/naming-white.webp" alt="Black Wave" className="w-[min(70vw,560px)]" />
+          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-[min(70vw,560px)]" />
           <p className="pl-[0.6em] text-[length:var(--fs-label)] uppercase tracking-[0.6em] text-paper/70">Jiu Jitsu Team</p>
         </div>
-        <img data-end-item src="/brand/slogan-white.webp" alt="Just Flow" className="w-[min(46vw,240px)]" />
+        <img data-end-item src="/brand/slogan-white.webp" alt="Just Flow" width={1400} height={530} className="h-auto w-[min(46vw,240px)]" />
         <CtaLink data-end-item data-cta href={ctaHref} className="mt-2">
           {ctaLabel}
         </CtaLink>

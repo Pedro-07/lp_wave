@@ -18,6 +18,24 @@ export function TrainingVideoSection() {
   const [isStatic] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches)
   const [source] = useState(() => (window.innerHeight > window.innerWidth ? VIDEO.portrait : VIDEO.landscape))
   const [withSound, setWithSound] = useState(false)
+  /** O vídeo só é baixado quando a seção se aproxima (poupa dados e o início da página). */
+  const [near, setNear] = useState(false)
+
+  useEffect(() => {
+    const el = scope.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: "100% 0px" },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   // Toca só quando está na tela (economiza bateria e dados) e silencia ao sair.
   useEffect(() => {
@@ -52,9 +70,10 @@ export function TrainingVideoSection() {
     () => {
       if (isStatic) return
       const q = gsap.utils.selector(scope.current)
-      const titleWords = SplitText.create(q("[data-tatame-title]")[0], { type: "words" }).words
+      const titleWords = SplitText.create(q("[data-tatame-title]")[0], { type: "words", aria: "none" }).words
       gsap.set(titleWords, { yPercent: 60, autoAlpha: 0, filter: "blur(10px)" })
-      gsap.set(q("[data-tatame-actions]"), { autoAlpha: 0, y: 16 })
+      // opacity (não autoAlpha): os botões continuam alcançáveis pelo Tab
+      gsap.set(q("[data-tatame-actions]"), { opacity: 0, y: 16 })
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -86,7 +105,7 @@ export function TrainingVideoSection() {
       tl.to(q("[data-tatame-caption]"), { autoAlpha: 0, y: 16, duration: 0.14, ease: "power2.in" }, 0.02)
       // Frase de tela cheia + ações
       tl.to(titleWords, { yPercent: 0, autoAlpha: 1, filter: "blur(0px)", duration: 0.25, stagger: 0.05, ease: "power3.out" }, 0.62)
-      tl.to(q("[data-tatame-actions]"), { autoAlpha: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.8)
+      tl.to(q("[data-tatame-actions]"), { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.8)
       tl.to({}, { duration: 0.15 }) // respiro antes de soltar
     },
     { scope },
@@ -104,12 +123,12 @@ export function TrainingVideoSection() {
           <video
             ref={videoRef}
             data-tatame-video
-            src={source.src}
+            src={near ? source.src : undefined}
             poster={source.poster}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload={near ? "auto" : "none"}
             controls={isStatic}
             aria-label="Treino na Black Wave: mãos na gola, pés no tatame, faixa sendo amarrada"
             className="h-full w-full object-cover"

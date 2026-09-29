@@ -49,8 +49,27 @@ export function Viewer360({ dir, count, label, className = "" }: Viewer360Props)
     ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h)
   }
 
-  // Carrega os quadros da variante atual (o primeiro com prioridade).
+  // Só começa a baixar quando o visualizador se aproxima da tela.
+  const [near, setNear] = useState(false)
   useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: "150% 0px" },
+    )
+    io.observe(wrap)
+    return () => io.disconnect()
+  }, [])
+
+  // Carrega os quadros da variante atual.
+  useEffect(() => {
+    if (!near) return
     setLoaded(0)
     const isMobile = matchMedia("(max-width: 767px)").matches
     let done = 0
@@ -66,7 +85,7 @@ export function Viewer360({ dir, count, label, className = "" }: Viewer360Props)
       return img
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dir, count])
+  }, [dir, count, near])
 
   // Tamanho do canvas (dpr ≤ 2)
   useEffect(() => {

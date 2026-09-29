@@ -13,7 +13,7 @@ export function OuvidoriaSection() {
       const mm = gsap.matchMedia()
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const q = gsap.utils.selector(scope.current)
-        const words = SplitText.create(q("[data-ouv-title]")[0], { type: "words" }).words
+        const words = SplitText.create(q("[data-ouv-title]")[0], { type: "words", aria: "none" }).words
         gsap.from(words, {
           yPercent: 60,
           autoAlpha: 0,
@@ -25,7 +25,7 @@ export function OuvidoriaSection() {
         })
         gsap.from(q("[data-ouv-rise]"), {
           y: 24,
-          autoAlpha: 0,
+          opacity: 0,
           duration: 1,
           ease: "expo.out",
           stagger: 0.08,

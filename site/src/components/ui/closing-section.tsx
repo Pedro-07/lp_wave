@@ -16,7 +16,7 @@ export function ClosingSection() {
       if (isStatic) return
       const root = scope.current!
       const q = gsap.utils.selector(root)
-      const lines = q("[data-thesis-line]").map((el) => SplitText.create(el, { type: "words" }).words)
+      const lines = q("[data-thesis-line]").map((el) => SplitText.create(el, { type: "words", aria: "none" }).words)
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -27,7 +27,7 @@ export function ClosingSection() {
         tl.fromTo(words, { opacity: 0.12 }, { opacity: 1, stagger: 0.04, duration: 0.2 }, i * 0.25)
       })
       addSymbolDraw(tl, root, 0.5, 0.3)
-      tl.from(q("[data-closing-rise]"), { autoAlpha: 0, y: 24, stagger: 0.04, duration: 0.12, ease: "power2.out" }, 0.78)
+      tl.from(q("[data-closing-rise]"), { opacity: 0, y: 24, stagger: 0.04, duration: 0.12, ease: "power2.out" }, 0.78)
     },
     { scope },
   )
@@ -57,7 +57,7 @@ export function ClosingSection() {
           <p data-closing-rise className="max-w-[34ch] text-[length:var(--fs-body)] leading-relaxed text-paper/75">
             Toda inquietação que você trouxer, a gente direciona.
           </p>
-          <img data-closing-rise src="/brand/slogan-white.webp" alt="Just Flow" className="w-[min(60vw,220px)]" loading="lazy" />
+          <img data-closing-rise src="/brand/slogan-white.webp" alt="Just Flow" width={1400} height={530} className="h-auto w-[min(60vw,220px)]" loading="lazy" />
           <CtaLink data-closing-rise href="#aula-experimental" className="self-start">
             Agendar aula experimental
           </CtaLink>

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 import { useGSAP } from "@gsap/react"
+import { trapFocus } from "@/lib/focus-trap"
 import { gsap, setScrollLocked } from "@/lib/scroll"
 import { MODALIDADES, whatsappLink, type Modalidade } from "@/config"
 
@@ -69,7 +70,10 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
     const previous = document.activeElement as HTMLElement | null
     setScrollLocked(true)
     firstField.current?.focus({ preventScroll: true })
+    const panel = root.current?.querySelector<HTMLElement>("[data-drawer-panel]")
+    const release = panel ? trapFocus(panel) : undefined
     return () => {
+      release?.()
       setScrollLocked(false)
       previous?.focus?.({ preventScroll: true })
     }

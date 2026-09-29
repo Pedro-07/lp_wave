@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import { useGSAP } from "@gsap/react"
+import { trapFocus } from "@/lib/focus-trap"
 import { gsap, setScrollLocked } from "@/lib/scroll"
 
 // Tela de entrada: o navegador só libera áudio após um gesto, então pedimos
@@ -25,7 +26,11 @@ export function SoundGate({ onChoose, onClosed }: SoundGateProps) {
     // Foco no próprio diálogo (sem contorno): leitores de tela o anunciam, e
     // o teclado usa Enter/Espaço (com som) ou Esc (sem som).
     root.current?.focus({ preventScroll: true })
-    return () => setScrollLocked(false)
+    const release = root.current ? trapFocus(root.current) : undefined
+    return () => {
+      release?.()
+      setScrollLocked(false)
+    }
   }, [])
 
   const { contextSafe } = useGSAP(

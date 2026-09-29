@@ -76,7 +76,7 @@ export function PerturbationSection() {
 
       // Palavras de cada cena (abertura, motivos, fecho). Sem máscara: nada
       // corta os acentos; o que está fora de cena fica com autoAlpha 0.
-      const words = (el: Element) => SplitText.create(el, { type: "words" }).words
+      const words = (el: Element) => SplitText.create(el, { type: "words", aria: "none" }).words
       const intro = q("[data-scene-intro] [data-words]").flatMap(words)
       const motives = q("[data-motive]").map(words)
       const [closingLineA, closingLineB] = q("[data-closing] [data-words]")
@@ -105,7 +105,7 @@ export function PerturbationSection() {
         scrollTrigger: { trigger: stage, start: "top 70%" },
       })
       gsap.from(q("[data-rise]"), {
-        autoAlpha: 0,
+        opacity: 0,
         y: 24,
         duration: 1,
         ease: "expo.out",

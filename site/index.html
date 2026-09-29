@@ -63,7 +63,9 @@
     </script>
 
     <link rel="preload" href="/fonts/astoria-sans-800-cond.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/hero/poster.webp" as="image" fetchpriority="high" />
+    <!-- Poster do hero: vertical no celular em pé, horizontal no resto (igual ao <picture>) -->
+    <link rel="preload" href="/hero/poster-p.webp" as="image" fetchpriority="high" media="(orientation: portrait)" />
+    <link rel="preload" href="/hero/poster.webp" as="image" fetchpriority="high" media="(orientation: landscape)" />
   </head>
   <body>
     <div id="root"></div>

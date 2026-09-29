@@ -69,7 +69,7 @@ export function TestimonialsSection() {
       if (isStatic) return
       const q = gsap.utils.selector(scope.current)
 
-      const title = SplitText.create(q("[data-voices-title]")[0], { type: "words" }).words
+      const title = SplitText.create(q("[data-voices-title]")[0], { type: "words", aria: "none" }).words
       gsap.from(title, {
         yPercent: 60,
         autoAlpha: 0,
@@ -82,7 +82,7 @@ export function TestimonialsSection() {
 
       for (const block of q("[data-voice]")) {
         const b = gsap.utils.selector(block)
-        const words = SplitText.create(b("[data-voice-quote]")[0], { type: "words" }).words
+        const words = SplitText.create(b("[data-voice-quote]")[0], { type: "words", aria: "none" }).words
 
         // As palavras acendem no ritmo da rolagem.
         gsap.fromTo(

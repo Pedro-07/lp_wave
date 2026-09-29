@@ -15,7 +15,7 @@ const LINKS = [
 /** Selo do patch: símbolo no centro e texto correndo em volta. */
 function Seal() {
   return (
-    <a href="#aula-experimental" aria-label="Agendar aula experimental" className="group relative block size-[clamp(9rem,16vw,12rem)] shrink-0">
+    <a href="#aula-experimental" aria-label="Black Wave · Brazilian Jiu Jitsu · Just Flow — agendar aula experimental" className="group relative block size-[clamp(9rem,16vw,12rem)] shrink-0">
       <svg viewBox="0 0 200 200" className="seal-spin absolute inset-0 h-full w-full" aria-hidden="true">
         <defs>
           <path id="seal-circle" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
@@ -41,7 +41,7 @@ export function SiteFooter() {
     <footer className="relative border-t border-paper/10 bg-ink px-[var(--gutter)] pt-[clamp(4rem,10vw,8rem)] pb-[clamp(1.5rem,4vw,2.5rem)] text-paper">
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-x-[var(--gutter)]">
         <div className="flex flex-col gap-8 lg:col-span-5">
-          <img src="/brand/naming-white.webp" alt="Black Wave" className="w-[min(70vw,22rem)]" loading="lazy" />
+          <img src="/brand/naming-white.webp" alt="Black Wave" width={1400} height={158} className="h-auto w-[min(70vw,22rem)]" loading="lazy" />
           <p className={label}>Jiu Jitsu Team · São Luís — MA</p>
           <Seal />
         </div>
