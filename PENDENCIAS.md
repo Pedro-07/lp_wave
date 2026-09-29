@@ -44,3 +44,14 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Revisar o hero no celular real (iPhone/Android)
 - [ ] SEO: hoje em https://lp-wave.vercel.app — ao ter domínio próprio, trocar `VITE_SITE_URL` em `site/.env`, criar sitemap.xml e cadastrar no Google Search Console
 - [ ] SEO local: endereço, telefone e horários para o JSON-LD e para o Perfil da Empresa no Google
+
+## Seções 3–10 (plano aprovado 2026-09-29)
+- [ ] **Número do WhatsApp** (recebe pedidos de aula e interesse em kimonos)
+- [ ] **E-mail da ouvidoria** (variável de ambiente na Vercel)
+- [ ] Modalidades: idades, horários, confirmar turma feminina só de mulheres
+- [ ] Kimonos: tamanhos disponíveis
+- [ ] Depoimentos reais (frase, nome, faixa, tempo de treino) — 3 ou mais
+- [ ] Endereço e horários da unidade São Luís
+- [ ] Instagram oficial
+- [ ] Confirmar crédito "Identidade visual: Double Ace" no rodapé
+- [ ] Vídeo real de treino (substitui o gerado no Higgsfield)

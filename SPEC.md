@@ -81,6 +81,54 @@ Entrada: título/apoio com reveal por linha (como v1).
 Reduced motion: sem pin; lista estática em branco; faixa preta parada.
 Motivo da v2: na v1 (lista livre) rolagens rápidas pulavam frases — sem controle de ritmo.
 
+### Seções 3–10 — plano aprovado (2026-09-29)
+Decisões do cliente: vídeo de treino gerado no Higgsfield (placeholder até o real); imagens das modalidades no Higgsfield no estilo da marca; 360° fotográfico (sequência de quadros) para os kimonos; formulário de aula experimental em **gaveta lateral** aberta por todos os CTAs "Agendar"; pedidos de aula vão para o **WhatsApp** (mensagem montada a partir do formulário). Momentos wow: hero (1), faixa (2), Gear 360° (3) — as demais seções usam só reveals e parallax sutis.
+Material extra do Drive: `brand/tags/` (etiqueta vertical de kimono, etiqueta de faixa, patch quadrado com texto circular) — usar como referência na geração dos kimonos, pontos de detalhe no 360°, faixa de texto da divisória e selo girando no rodapé.
+
+### Seção 3 — O tatame (vídeo)
+Conteúdo: legenda na janela *"O que acontece nas profundezas."*; em tela cheia **Técnica, suor e constância.**; botões "Assistir com som" e **Conheça as modalidades ↓**.
+Assets: vídeo P&B de treino (Higgsfield), 16:9 (desktop) e 9:16 (mobile), sem rostos em destaque (mãos na gola, pés no tatame, faixa sendo amarrada, silhuetas); poster de cada.
+Scroll: pin curto; o vídeo começa numa janela ~40% da largura (clip-path inset), em P&B e levemente desfocado, e se expande até tela cheia (clip-path → 0, filtro → nítido); legenda sai, frase de tela cheia entra por palavras. Vídeo mudo em loop; "Assistir com som" liga o áudio do vídeo e silencia o mar.
+Reduced motion: vídeo em tela cheia parado no poster, com play manual.
+
+### Seção 4 — Modalidades
+Título: **Escolha por onde entrar.**
+- Jiu-Jitsu Gi — A arte com kimono. Pegadas, alavancas e paciência. Para quem é: iniciantes e graduados, a partir de [PREENCHER] anos.
+- No-Gi — Sem kimono, mais ritmo. Controle pelo corpo, não pelo tecido.
+- Defesa pessoal — Sair de agarrões, controlar e ficar de pé. Jiu-Jitsu para a vida real.
+- Kids — Disciplina e confiança desde cedo. Idades: [PREENCHER].
+- Feminino — Turma só de mulheres [CONFIRMAR]. Mesmo tatame, mesma exigência técnica.
+Cada painel: "Horários: [PREENCHER]" + CTA **Agendar aula de [modalidade]** (abre a gaveta com a modalidade marcada).
+Layout: carrossel horizontal de arrastar; painéis altos com imagem sangrada, número gigante, nome em display; painel ativo expande.
+
+### Seção 5 — Gear (divisória + 360°)
+Divisória: faixa com "GEAR" gigante + texto corrido "BLACK WAVE BRAZILIAN JIU JITSU" (do patch).
+Título: **Vista a onda.**
+- Kimono Basic — Linha essencial para treinos regulares.
+- Kimono Premium — Feito com fornecedores nacionais de referência. Tecido de alta resistência, acabamento superior e durabilidade para treino intenso e competição.
+Cores Branco/Preto; tamanhos [CONFIRMAR]; "Arraste para girar"; pontos de detalhe (etiqueta da gola, patch).
+CTA **Quero este kimono** → WhatsApp: "Olá, Black Wave! Tenho interesse no Kimono {modelo} {cor}. Pode me passar tamanhos e valores?"
+
+### Seção 6 — Vozes do tatame
+Título: **Quem já está no tatame.** 3 depoimentos [PREENCHER] (frase, nome, faixa, tempo de treino). Um por vez em tipografia grande; assinatura com faixa na cor da graduação desenhada no traço do símbolo. Nada inventado.
+
+### Seção 7 — Ouvidoria
+Home: **Fale sem se identificar.** / Sugestões, críticas ou denúncias chegam à gestão da equipe. Não pedimos nome, e-mail ou telefone. / CTA **Abrir a ouvidoria**.
+Página `/ouvidoria`: selo "Anônima"; "Este formulário não pede nem registra dados que identifiquem você."; Sugestão / Crítica / Denúncia + "Sua mensagem"; botão **Enviar anonimamente**; confirmação "Recebido. Obrigado por ajudar a direcionar a onda."
+Envio: função serverless na Vercel → e-mail (destino em variável de ambiente, cadastrado depois); anti-spam sem identificação (honeypot + tempo mínimo).
+
+### Seção 8 — Fecho
+**Sem perturbação, não existe movimento. Sem movimento, não existe onda.** / *Toda inquietação que você trouxer, a gente direciona.* / Just Flow / CTA **Agendar aula experimental**.
+
+### Seção 9 — Onde estamos
+**São Luís — MA**; endereço [PREENCHER]; horários [PREENCHER]; CTAs **Como chegar** (Google Maps) e **Chamar no WhatsApp**; mapa escuro P&B.
+
+### Seção 10 — Rodapé
+Logo, Just Flow, links (Modalidades, Gear, Ouvidoria, Instagram [PREENCHER]), "© 2026 Black Wave Jiu Jitsu Team — São Luís, MA", "Identidade visual: Double Ace" [CONFIRMAR], selo circular girando.
+
+### Gaveta — Aula experimental
+Título **Aula experimental**; campos nome, WhatsApp, modalidade (pré-marcada), idade, experiência (nunca treinou / faixa); botão **Quero agendar** → abre o WhatsApp com a mensagem montada.
+
 ## 5. Regras de movimento
 - Máx. 1 wow por seção, 3 no site. O hero é o wow nº 1.
 - Easings: `expo.out` entradas, `power2.inOut` transições, `none` só em scrub.
@@ -108,3 +156,4 @@ Motivo da v2: na v1 (lista livre) rolagens rápidas pulavam frases — sem contr
 - Ajuste (2026-09-28): janelas das frases com folga (pt 0.25em / pb 0.15em, compensadas por margem negativa) para não cortar acentos; frases fora de cena com autoAlpha 0 e deslocamento de 140% — em repouso só a frase atual é visível (medido em todos os passos, 1440 e 390 px).
 - v3 (2026-09-29): passos 0 abertura (título + apoio sozinhos; saem quando o 1º motivo entra) → 1–5 motivos (1 por faixa; a cor nova corre pelo tecido junto com a troca de frase + leve pulso na faixa) → 6 fecho; TOTAL 6,5 × 70vh. Faixa desliza para a cena com o 1º motivo. Transição por palavras (SplitText words, sem máscara): saída sobe 50% e desfoca, entrada sobe de 60% e ganha foco. A entrada da abertura anima os blocos, nunca as palavras (evita conflito com a timeline ao chegar direto num passo adiante). Testado: salto direto p/ passos 1 e 3, rodinha rápida, ida e volta — sempre 1 cena visível.
 - Fecho em 2 passos (2026-09-29): passo 6 "Aqui, ela não é evitada." entra sozinha em branco; passo 7 ela apaga para 60% (opacidade nas palavras, não cor herdada — Safari) e "É direcionada." entra em branco. TOTAL 7,5 × 70vh.
+- Seção 3 construída (2026-09-29): `training-video-section.tsx`. Vídeos Kling std 10 s com áudio nativo (4 cortes: golas, pés, clinch em contraluz, faixa preta), 16:9 1276×720 e 9:16 720×1276, ~1,8 MB cada (`site/public/tatame/`). Pin 1,4 × altura: clip-path inset(24% 28%) → 0, brilho 0.55 → 1, blur 4 → 0. Toca só visível (IntersectionObserver); ao sair pausa e volta a mudo. Custo: 2 cr (quadros) + 35 cr (vídeos).
