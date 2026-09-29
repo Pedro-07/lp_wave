@@ -55,3 +55,4 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Instagram oficial
 - [ ] Confirmar crédito "Identidade visual: Double Ace" no rodapé
 - [ ] Vídeo real de treino (substitui o gerado no Higgsfield)
+- [ ] Fotos reais dos kimonos (idealmente 24–36 fotos girando cada modelo/cor) para substituir o 360° gerado por IA

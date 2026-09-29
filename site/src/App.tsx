@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { BookingProvider } from "@/components/ui/booking-drawer"
+import { GearSection } from "@/components/ui/gear-section"
 import { ModalitiesSection } from "@/components/ui/modalities-section"
 import { PerturbationSection } from "@/components/ui/perturbation-section"
 import { TrainingVideoSection } from "@/components/ui/training-video-section"
@@ -16,11 +17,12 @@ export default function App() {
         <PerturbationSection />
         <TrainingVideoSection />
         <ModalitiesSection />
+        <GearSection />
 
-        {/* Provisório: as seções 5+ (Gear, depoimentos, ouvidoria…) vêm a seguir. */}
+        {/* Provisório: as seções 6+ (depoimentos, ouvidoria…) vêm a seguir. */}
         <section className="flex min-h-[50svh] items-center px-[var(--gutter)]">
           <p className="text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-grey">
-            Próxima seção — Gear (em construção)
+            Próxima seção — Vozes do tatame (em construção)
           </p>
         </section>
       </main>
