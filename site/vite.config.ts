@@ -9,4 +9,13 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(import.meta.dirname, './src') },
   },
+  build: {
+    // Duas páginas: o site (/) e a ouvidoria anônima (/ouvidoria/).
+    rollupOptions: {
+      input: {
+        main: path.resolve(import.meta.dirname, 'index.html'),
+        ouvidoria: path.resolve(import.meta.dirname, 'ouvidoria/index.html'),
+      },
+    },
+  },
 })

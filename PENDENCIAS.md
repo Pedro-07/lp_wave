@@ -47,7 +47,13 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 
 ## Seções 3–10 (plano aprovado 2026-09-29)
 - [~] **Número do WhatsApp**: provisório (98) 98855-8687 em `site/src/config.ts` — confirmar o definitivo
-- [ ] **E-mail da ouvidoria** (variável de ambiente na Vercel)
+- [ ] **Ativar a ouvidoria** (hoje responde "está sendo configurada"):
+  1. Criar conta grátis em resend.com e gerar uma API key
+  2. Vercel → projeto lp-wave → Settings → Environment Variables:
+     - `RESEND_API_KEY` = a chave do Resend
+     - `OUVIDORIA_TO` = e-mail que recebe (vários: separados por vírgula)
+     - `OUVIDORIA_FROM` (opcional) = remetente de um domínio verificado no Resend. Sem domínio próprio, o padrão `onboarding@resend.dev` só entrega para o e-mail dono da conta Resend
+  3. Fazer um novo deploy (Deployments → Redeploy) para as variáveis valerem
 - [ ] Modalidades: idades, horários, confirmar turma feminina só de mulheres
 - [ ] Kimonos: tamanhos disponíveis
 - [ ] Depoimentos reais (frase, nome, faixa, tempo de treino) — 3 ou mais
