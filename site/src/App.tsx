@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from "react"
 import { BookingProvider } from "@/components/ui/booking-drawer"
+import { SiteMenu } from "@/components/ui/site-menu"
 import { WaveHero } from "@/components/ui/wave-hero"
 import { useIdleReady } from "@/lib/idle"
 import { initScroll } from "@/lib/scroll"
@@ -15,6 +16,7 @@ export default function App() {
 
   return (
     <BookingProvider>
+      <SiteMenu />
       <main className="grain">
         <WaveHero />
         {rest && (

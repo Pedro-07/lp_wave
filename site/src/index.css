@@ -121,6 +121,8 @@ html.lenis body {
 .mods-track {
   scrollbar-width: none;
   cursor: grab;
+  /* gesto vertical = rolagem da página; o horizontal é tratado no código */
+  touch-action: pan-y;
 }
 .mods-track::-webkit-scrollbar {
   display: none;

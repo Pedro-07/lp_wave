@@ -4,6 +4,7 @@ import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 import symbol from "./symbol-draw.json"
 import { CtaLink } from "./cta-link"
+import { goToSection } from "./site-menu"
 
 // Seção 2 — "Da perturbação à faixa preta" (SPEC.md §4, v3).
 // A seção fica fixa (pin) e a rolagem avança um passo por vez, com encaixe:
@@ -276,6 +277,33 @@ export function PerturbationSection() {
             <div data-belt-inner>
               <Belt />
             </div>
+          </div>
+
+          {/* Trilha, não obrigação: dica de rolagem sempre visível + atalho para
+              quem quer ir direto às modalidades. */}
+          <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between px-[var(--gutter)] pb-[clamp(0.5rem,1.5vh,1rem)] text-[length:var(--fs-label)] uppercase tracking-[0.32em]">
+            <p aria-hidden="true" className="flex items-center gap-3 py-3 text-paper/70">
+              Continue rolando
+              <svg width="10" height="15" viewBox="0 0 12 18" className="animate-bounce">
+                <path d="M6 1v15M1 11l5 5 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              </svg>
+            </p>
+            <a
+              href="#modalidades"
+              aria-label="Pular para modalidades"
+              onClick={(e) => {
+                e.preventDefault()
+                goToSection("modalidades")
+              }}
+              className="group -mr-3 flex items-center gap-3 px-3 py-3 text-paper transition-colors hover:text-accent"
+            >
+              <span className="pl-[0.32em]">
+                Pular <span className="max-sm:hidden">para modalidades</span>
+              </span>
+              <svg width="16" height="10" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              </svg>
+            </a>
           </div>
         </div>
       )}

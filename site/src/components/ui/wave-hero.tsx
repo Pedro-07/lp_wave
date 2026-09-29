@@ -342,8 +342,8 @@ export function WaveHero({
           <br />
           Community
         </p>
-        <div className="flex flex-col items-end">
-          <p data-label>Est. 2026</p>
+        {/* O canto é do botão Menu (fixo, site-menu.tsx); o SOM fica logo abaixo dele. */}
+        <div className="flex flex-col items-end pt-[clamp(2.25rem,4vw,3rem)]">
           <button
             data-label
             data-sound-toggle
@@ -371,7 +371,7 @@ export function WaveHero({
         data-label
         className="pointer-events-none absolute bottom-[clamp(1.25rem,3vw,2.5rem)] left-[var(--gutter)] hidden text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/70 sm:block"
       >
-        São Luís — MA
+        São Luís — MA · Est. 2026
       </p>
 
       {/* Título */}

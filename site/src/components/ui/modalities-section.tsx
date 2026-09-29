@@ -66,6 +66,10 @@ export function ModalitiesSection() {
   const track = useRef<HTMLDivElement>(null)
   const pin = useRef<ScrollTrigger | null>(null)
   const [active, setActive] = useState(0)
+  const activeRef = useRef(0)
+  activeRef.current = active
+  /** true enquanto a pessoa arrasta a faixa (o encaixe espera ela soltar). */
+  const dragging = useRef(false)
   const [isStatic] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches)
 
   const maxScroll = () => {
@@ -113,7 +117,7 @@ export function ModalitiesSection() {
       // evento é eco do próprio sincronismo e é ignorado (comparar posições é
       // mais confiável que um sinal de tempo com a rolagem suave do Lenis).
       const st = pin.current
-      if (st) {
+      if (st && !dragging.current) {
         const expected = st.progress * maxScroll()
         if (Math.abs(el.scrollLeft - expected) > 2) {
           scrollToY(st.start + (el.scrollLeft / maxScroll()) * (st.end - st.start))
@@ -132,32 +136,68 @@ export function ModalitiesSection() {
     }
   }, [measure])
 
-  // Arrastar com mouse (no toque, a rolagem nativa já faz isso).
+  // Arrastar para o lado, com o dedo ou o mouse: a faixa acompanha o gesto e,
+  // ao soltar, vai para o painel seguinte/anterior (ou volta, se o gesto foi
+  // curto). Na versão fixa a faixa segue a rolagem da página, então o gesto
+  // move a página. Gesto mais vertical que horizontal = rolagem normal.
   useEffect(() => {
     const el = track.current
     if (!el) return
+    let state: "idle" | "pending" | "drag" = "idle"
+    let pointer = -1
     let startX = 0
-    let startScroll = 0
-    let dragging = false
+    let startY = 0
+    let startLeft = 0
+    let startActive = 0
     let moved = false
+
+    const setLeft = (left: number) => {
+      const max = maxScroll()
+      const x = Math.max(0, Math.min(max, left))
+      const st = pin.current
+      if (st) scrollToY(st.start + (x / max) * (st.end - st.start))
+      else el.scrollLeft = x
+    }
+    const end = () => {
+      state = "idle"
+      dragging.current = false
+      el.classList.remove("is-dragging")
+    }
     const down = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse" || e.button !== 0) return
-      dragging = true
+      if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return
+      state = "pending"
+      pointer = e.pointerId
       moved = false
       startX = e.clientX
-      startScroll = el.scrollLeft
-      el.classList.add("is-dragging")
+      startY = e.clientY
+      startLeft = el.scrollLeft
+      startActive = activeRef.current
     }
     const move = (e: PointerEvent) => {
-      if (!dragging) return
+      if (state === "idle" || e.pointerId !== pointer) return
       const dx = e.clientX - startX
-      if (Math.abs(dx) > 4) moved = true
-      el.scrollLeft = startScroll - dx
+      const dy = e.clientY - startY
+      if (state === "pending") {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return
+        if (Math.abs(dy) > Math.abs(dx)) {
+          state = "idle"
+          return
+        }
+        state = "drag"
+        moved = true
+        dragging.current = true
+        el.classList.add("is-dragging")
+      }
+      setLeft(startLeft - dx)
     }
-    const up = () => {
-      if (!dragging) return
-      dragging = false
-      el.classList.remove("is-dragging")
+    const up = (e: PointerEvent) => {
+      if (e.pointerId !== pointer) return
+      const wasDrag = state === "drag"
+      end()
+      if (!wasDrag) return
+      const dx = e.clientX - startX
+      const limit = Math.min(80, el.clientWidth * 0.12)
+      goRef.current(startActive + (dx < -limit ? 1 : dx > limit ? -1 : 0))
     }
     // Depois de arrastar, o clique não deve disparar links.
     const click = (e: MouseEvent) => {
@@ -170,11 +210,13 @@ export function ModalitiesSection() {
     el.addEventListener("pointerdown", down)
     window.addEventListener("pointermove", move)
     window.addEventListener("pointerup", up)
+    window.addEventListener("pointercancel", end)
     el.addEventListener("click", click, true)
     return () => {
       el.removeEventListener("pointerdown", down)
       window.removeEventListener("pointermove", move)
       window.removeEventListener("pointerup", up)
+      window.removeEventListener("pointercancel", end)
       el.removeEventListener("click", click, true)
     }
   }, [])
@@ -188,6 +230,8 @@ export function ModalitiesSection() {
       track.current?.scrollTo({ left: target * maxScroll(), behavior: "smooth" })
     }
   }
+  const goRef = useRef(go)
+  goRef.current = go
 
   useGSAP(
     () => {
@@ -228,7 +272,7 @@ export function ModalitiesSection() {
         },
         snap: {
           // Painéis + o fim (painel "Ainda em dúvida?" e saída da seção).
-          snapTo: (value) => gsap.utils.snap([...stops(), 1], value),
+          snapTo: (value) => (dragging.current ? value : gsap.utils.snap([...stops(), 1], value)),
           inertia: false,
           delay: 0.1,
           duration: { min: 0.25, max: 0.6 },
@@ -289,6 +333,9 @@ export function ModalitiesSection() {
               ))}
             </div>
             <p className="hidden text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60 lg:block">Role ou arraste ↔</p>
+            <p className="text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60 lg:hidden" aria-hidden="true">
+              Arraste ↔
+            </p>
           </div>
         </div>
 

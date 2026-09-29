@@ -7,6 +7,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText)
 
 let lenis: Lenis | null = null
 let locked = false
+let locks = 0
 
 export function initScroll() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return null
@@ -33,12 +34,23 @@ export function scrollToY(y: number, immediate = true) {
   else window.scrollTo({ top: y, behavior: immediate ? "auto" : "smooth" })
 }
 
-/** Trava/destrava a rolagem da página (usado pela tela de entrada). */
+/** Leva a página ao início de uma seção (pelo id). false = seção ainda não existe. */
+export function scrollToSection(id: string, immediate = true) {
+  const el = document.getElementById(id)
+  if (!el) return false
+  scrollToY(el.getBoundingClientRect().top + window.scrollY, immediate)
+  return true
+}
+
+/** Trava/destrava a rolagem da página (usado pela gaveta e pelo menu). */
 export function setScrollLocked(value: boolean) {
-  locked = value
-  if (value) lenis?.stop()
+  // Contador: menu e gaveta podem se sobrepor (CTA do menu abre a gaveta);
+  // a página só destrava quando o último deles fechar.
+  locks = Math.max(0, locks + (value ? 1 : -1))
+  locked = locks > 0
+  if (locked) lenis?.stop()
   else lenis?.start()
-  document.documentElement.style.overflow = value ? "hidden" : ""
+  document.documentElement.style.overflow = locked ? "hidden" : ""
 }
 
 export { gsap, ScrollTrigger, SplitText }
