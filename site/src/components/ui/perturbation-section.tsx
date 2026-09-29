@@ -27,9 +27,10 @@ const BELTS = [
   { key: "preta", name: "Preta" },
 ]
 
-/** Passos: 0 abertura, 1–5 motivos, 6 fecho; +0.5 de respiro antes de soltar. */
-const CLOSING_STEP = MOTIVES.length + 1
-const TOTAL = CLOSING_STEP + 0.5
+/** Passos: 0 abertura, 1–5 motivos, 6 "Aqui, ela não é evitada.", 7 "É direcionada.";
+ *  +0.5 de respiro antes de soltar. */
+const LAST_STEP = MOTIVES.length + 2
+const TOTAL = LAST_STEP + 0.5
 /** Rolagem por passo, em fração da altura da tela. */
 const STEP_VH = 0.7
 
@@ -78,7 +79,10 @@ export function PerturbationSection() {
       const words = (el: Element) => SplitText.create(el, { type: "words" }).words
       const intro = q("[data-scene-intro] [data-words]").flatMap(words)
       const motives = q("[data-motive]").map(words)
-      const closing = q("[data-closing] [data-words]").flatMap(words)
+      const [closingLineA, closingLineB] = q("[data-closing] [data-words]")
+      const closingA = words(closingLineA)
+      const closingB = words(closingLineB)
+      const closing = [...closingA, ...closingB]
 
       const hidden = { yPercent: 60, autoAlpha: 0, filter: "blur(10px)" }
       const shown = { yPercent: 0, autoAlpha: 1, filter: "blur(0px)" }
@@ -110,7 +114,7 @@ export function PerturbationSection() {
       })
 
       // Pontos de encaixe: cada passo inteiro + fim.
-      const points = [...Array.from({ length: CLOSING_STEP + 1 }, (_, i) => i / TOTAL), 1]
+      const points = [...Array.from({ length: LAST_STEP + 1 }, (_, i) => i / TOTAL), 1]
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -137,7 +141,7 @@ export function PerturbationSection() {
 
       // Troca de cena no passo k: a anterior sai (sobe e desfoca) e a nova
       // entra palavra a palavra, tudo dentro de [k-0.55, k].
-      const scenes = [intro, ...motives, closing]
+      const scenes = [intro, ...motives, closingA]
       for (let k = 1; k < scenes.length; k++) {
         const prev = scenes[k - 1]
         const next = scenes[k]
@@ -148,6 +152,10 @@ export function PerturbationSection() {
         )
         tl.to(next, { ...shown, duration: 0.3, stagger: 0.16 / next.length, ease: "power3.out" }, k - 0.3)
       }
+      // Último passo: "Aqui, ela não é evitada." fica e apaga para o cinza; o
+      // destaque passa para "É direcionada.", que entra embaixo.
+      tl.to(closingLineA, { color: "rgba(255,255,255,0.4)", duration: 0.3, ease: "power2.inOut" }, LAST_STEP - 0.5)
+      tl.to(closingB, { ...shown, duration: 0.3, stagger: 0.16 / closingB.length, ease: "power3.out" }, LAST_STEP - 0.3)
 
       // Faixa: desliza para a cena com o 1º motivo; a cada motivo seguinte a
       // cor nova corre pelo tecido e a faixa dá um leve pulso.
@@ -233,7 +241,7 @@ export function PerturbationSection() {
                     </p>
                   ))}
                   <h2 data-closing className={DISPLAY + " col-start-1 row-start-1"}>
-                    <span data-words className="block text-paper/40">
+                    <span data-words className="block">
                       Aqui, ela não é evitada.
                     </span>
                     <span data-words className="block">
