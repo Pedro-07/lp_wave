@@ -82,7 +82,8 @@ export function TrainingVideoSection() {
         { scale: 1, filter: "brightness(1) blur(0px)", duration: 0.7, ease: "power2.inOut" },
         0,
       )
-      tl.to(q("[data-tatame-caption]"), { autoAlpha: 0, y: -16, duration: 0.2, ease: "power2.in" }, 0.05)
+      // Legenda e dica saem assim que a janela começa a abrir.
+      tl.to(q("[data-tatame-caption]"), { autoAlpha: 0, y: 16, duration: 0.14, ease: "power2.in" }, 0.02)
       // Frase de tela cheia + ações
       tl.to(titleWords, { yPercent: 0, autoAlpha: 1, filter: "blur(0px)", duration: 0.25, stagger: 0.05, ease: "power3.out" }, 0.62)
       tl.to(q("[data-tatame-actions]"), { autoAlpha: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.8)
@@ -117,14 +118,21 @@ export function TrainingVideoSection() {
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.45)_0%,rgba(0,0,0,0)_30%,rgba(0,0,0,0)_50%,rgba(0,0,0,0.8)_100%)]" />
         </div>
 
-        {/* Legenda da janela */}
+        {/* Legenda da janela + dica de rolagem */}
         {!isStatic && (
-          <p
+          <div
             data-tatame-caption
-            className="absolute inset-x-0 bottom-[calc(24%-3.25rem)] text-center text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/70"
+            className="absolute inset-x-0 top-[calc(76%+1.25rem)] flex flex-col items-center gap-4 text-center text-[length:var(--fs-label)] uppercase tracking-[0.32em]"
           >
-            O que acontece nas profundezas.
-          </p>
+            <p className="text-paper/70">O que acontece nas profundezas.</p>
+            <p className="flex items-center gap-3 text-paper/80">
+              {/* Cantos que se abrem: a janela vai virar tela cheia */}
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="tatame-expand text-accent">
+                <path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              </svg>
+              Role para ver em tela cheia
+            </p>
+          </div>
         )}
 
         {/* Frase de tela cheia + ações */}

@@ -104,6 +104,18 @@ html.lenis body {
   mask-position: var(--wipe) 0;
 }
 
+/* Dica do vídeo: cantos "respirando" (abrir para tela cheia) */
+.tatame-expand {
+  animation: tatame-expand 1.8s var(--ease-out) infinite;
+}
+@keyframes tatame-expand {
+  0%, 100% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tatame-expand { animation: none; }
+}
+
 /* Indicador do botão de som */
 .eq-bar {
   height: 2px;
