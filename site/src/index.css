@@ -116,6 +116,28 @@ html.lenis body {
   .tatame-expand { animation: none; }
 }
 
+/* Carrossel de modalidades */
+.mods-track {
+  scrollbar-width: none;
+  cursor: grab;
+}
+.mods-track::-webkit-scrollbar {
+  display: none;
+}
+.mods-track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+.mods-img {
+  /* parallax: a imagem desliza um pouco contra o movimento do painel */
+  transform: translateX(calc(var(--p, 0) * -7%)) scale(1.16);
+  transition: filter 0.8s var(--ease-out);
+}
+.mods-index {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.55);
+}
+
 /* Indicador do botão de som */
 .eq-bar {
   height: 2px;
@@ -136,7 +158,11 @@ html.lenis body {
   }
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+/* Em @layer base para que utilitários (ex.: focus-visible:outline-none em
+   campos que já têm estilo de foco próprio) possam sobrescrever. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
 }

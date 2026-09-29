@@ -46,7 +46,7 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] SEO local: endereço, telefone e horários para o JSON-LD e para o Perfil da Empresa no Google
 
 ## Seções 3–10 (plano aprovado 2026-09-29)
-- [ ] **Número do WhatsApp** (recebe pedidos de aula e interesse em kimonos)
+- [~] **Número do WhatsApp**: provisório (98) 98855-8687 em `site/src/config.ts` — confirmar o definitivo
 - [ ] **E-mail da ouvidoria** (variável de ambiente na Vercel)
 - [ ] Modalidades: idades, horários, confirmar turma feminina só de mulheres
 - [ ] Kimonos: tamanhos disponíveis
