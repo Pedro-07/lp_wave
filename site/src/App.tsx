@@ -1,34 +1,33 @@
-import { useEffect } from "react"
+import { lazy, Suspense, useEffect } from "react"
 import { BookingProvider } from "@/components/ui/booking-drawer"
-import { ClosingSection } from "@/components/ui/closing-section"
-import { GearSection } from "@/components/ui/gear-section"
-import { LocationSection } from "@/components/ui/location-section"
-import { ModalitiesSection } from "@/components/ui/modalities-section"
-import { OuvidoriaSection } from "@/components/ui/ouvidoria-section"
-import { PerturbationSection } from "@/components/ui/perturbation-section"
-import { SiteFooter } from "@/components/ui/site-footer"
-import { TestimonialsSection } from "@/components/ui/testimonials-section"
-import { TrainingVideoSection } from "@/components/ui/training-video-section"
 import { WaveHero } from "@/components/ui/wave-hero"
+import { useIdleReady } from "@/lib/idle"
 import { initScroll } from "@/lib/scroll"
+
+// O hero vem no carregamento; o resto (below-fold.tsx) é outro pedaço de código,
+// baixado e renderizado no primeiro momento ocioso depois da primeira tela.
+const BelowFold = lazy(() => import("./below-fold"))
+const SiteFooter = lazy(() => import("./below-fold").then((m) => ({ default: m.SiteFooter })))
 
 export default function App() {
   useEffect(() => initScroll() ?? undefined, [])
+  const rest = useIdleReady()
 
   return (
     <BookingProvider>
       <main className="grain">
         <WaveHero />
-        <PerturbationSection />
-        <TrainingVideoSection />
-        <ModalitiesSection />
-        <GearSection />
-        <TestimonialsSection />
-        <OuvidoriaSection />
-        <ClosingSection />
-        <LocationSection />
+        {rest && (
+          <Suspense fallback={null}>
+            <BelowFold />
+          </Suspense>
+        )}
       </main>
-      <SiteFooter />
+      {rest && (
+        <Suspense fallback={null}>
+          <SiteFooter />
+        </Suspense>
+      )}
     </BookingProvider>
   )
 }

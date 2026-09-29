@@ -26,6 +26,9 @@ export function initScroll() {
 
 /** Leva a página a y (via Lenis quando ativo). immediate = sem animação. */
 export function scrollToY(y: number, immediate = true) {
+  // A página pode ter crescido há pouco (seções montadas depois do hero):
+  // o Lenis precisa da altura nova, senão limita o destino à altura antiga.
+  lenis?.resize()
   if (lenis) lenis.scrollTo(y, immediate ? { immediate: true, force: true } : { duration: 1, force: true })
   else window.scrollTo({ top: y, behavior: immediate ? "auto" : "smooth" })
 }
