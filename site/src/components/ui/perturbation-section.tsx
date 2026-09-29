@@ -154,7 +154,9 @@ export function PerturbationSection() {
       }
       // Último passo: "Aqui, ela não é evitada." fica e apaga para o cinza; o
       // destaque passa para "É direcionada.", que entra embaixo.
-      tl.to(closingLineA, { color: "rgba(255,255,255,0.4)", duration: 0.3, ease: "power2.inOut" }, LAST_STEP - 0.5)
+      // Opacidade nas próprias palavras (não cor herdada do bloco): o Safari às
+      // vezes não redesenha filhos com filter/transform quando a cor herdada muda.
+      tl.to(closingA, { opacity: 0.6, duration: 0.3, ease: "power2.inOut" }, LAST_STEP - 0.5)
       tl.to(closingB, { ...shown, duration: 0.3, stagger: 0.16 / closingB.length, ease: "power3.out" }, LAST_STEP - 0.3)
 
       // Faixa: desliza para a cena com o 1º motivo; a cada motivo seguinte a
@@ -314,7 +316,7 @@ function StaticVersion() {
         <Belt layer="preta" />
       </div>
       <h2 className="font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.92]">
-        <span className="block text-paper/40">Aqui, ela não é evitada.</span>
+        <span className="block text-paper/60">Aqui, ela não é evitada.</span>
         <span className="block">É direcionada.</span>
       </h2>
     </div>
