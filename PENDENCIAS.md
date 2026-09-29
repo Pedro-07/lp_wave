@@ -48,12 +48,10 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 ## Seções 3–10 (plano aprovado 2026-09-29)
 - [~] **Número do WhatsApp**: provisório (98) 98855-8687 em `site/src/config.ts` — confirmar o definitivo
 - [ ] **Ativar a ouvidoria** (hoje responde "está sendo configurada"):
-  1. Criar conta grátis em resend.com e gerar uma API key
-  2. Vercel → projeto lp-wave → Settings → Environment Variables:
-     - `RESEND_API_KEY` = a chave do Resend
-     - `OUVIDORIA_TO` = e-mail que recebe (vários: separados por vírgula)
-     - `OUVIDORIA_FROM` (opcional) = remetente de um domínio verificado no Resend. Sem domínio próprio, o padrão `onboarding@resend.dev` só entrega para o e-mail dono da conta Resend
-  3. Fazer um novo deploy (Deployments → Redeploy) para as variáveis valerem
+  1. **Banco (obrigatório):** Vercel → projeto lp-wave → Storage (ou Marketplace) → **Upstash for Redis** → criar (plano grátis) e conectar ao projeto. Isso cria sozinho as variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL/_TOKEN`).
+  2. **Senha do painel (obrigatório):** Settings → Environment Variables → `OUVIDORIA_ADMIN_TOKEN` = uma senha longa (a equipe usa em /ouvidoria/gestao/).
+  3. **Aviso por e-mail (opcional):** conta grátis em resend.com → `RESEND_API_KEY`, `OUVIDORIA_TO` (e-mail que recebe; vários separados por vírgula) e, se tiver domínio verificado no Resend, `OUVIDORIA_FROM`. Sem domínio, o Resend só entrega para o e-mail dono da conta.
+  4. Deployments → **Redeploy** para as variáveis valerem.
 - [ ] Modalidades: idades, horários, confirmar turma feminina só de mulheres
 - [ ] Kimonos: tamanhos disponíveis
 - [ ] Depoimentos reais (frase, nome, faixa, tempo de treino) — 3 ou mais

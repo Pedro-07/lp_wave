@@ -78,6 +78,13 @@ export function OuvidoriaSection() {
               <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
             </svg>
           </a>
+          <a
+            data-ouv-rise
+            href="/ouvidoria/#acompanhar"
+            className="-mt-2 self-start text-sm text-paper/60 underline decoration-paper/30 underline-offset-8 transition-colors hover:text-paper"
+          >
+            Já enviou? Acompanhe pelo código
+          </a>
         </div>
       </div>
     </section>
