@@ -1,35 +1,38 @@
 import { useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import { OceanSound } from "@/lib/ocean-sound"
-import { gsap, ScrollTrigger, SplitText } from "@/lib/scroll"
+import { gsap, SplitText } from "@/lib/scroll"
 import { CtaLink } from "./cta-link"
 import { addSymbolDraw, SymbolDraw } from "./symbol-draw"
 
 // Hero "Onda → Símbolo" — SPEC.md §4, Seção 1.
-// Abertura automática, numa etapa só: ao abrir o site a onda corre, o símbolo
-// se desenha, a marca aparece e o CTA ganha destaque — sem precisar rolar.
-// Celular em pé usa o vídeo vertical próprio; o resto, o horizontal.
+// Inspirado no MetroHero (21st.dev), mas sem travar a página: a seção é
+// fixada com ScrollTrigger e o scroll comum avança o vídeo. Em telas de
+// toque o vídeo vira sequência de imagens em canvas (mais confiável no iOS).
 
-const VIDEOS = {
-  landscape: { src: "/hero/hero-onda-h.mp4", focusX: 0.36 },
-  portrait: { src: "/hero/hero-onda-v.mp4", focusX: 0.55 },
-}
+const VIDEO_SRC = "/hero/hero-onda.mp4"
 const POSTER_SRC = "/hero/poster.webp"
 const POSTER_PORTRAIT_SRC = "/hero/poster-p.webp"
-/** Ponto de foco horizontal do pôster paisagem (a espiral da onda fica à esquerda). */
+/** Ponto de foco horizontal do vídeo (a espiral da onda fica à esquerda). */
 const FOCUS_X = 0.36
+// Dois jogos de quadros: paisagem (do vídeo 1280×716) e retrato (vídeo
+// vertical próprio, 720×1276) — no celular em pé quase não há ampliação.
+const FRAME_SETS = {
+  landscape: { dir: "/hero/frames", count: 54, focusX: FOCUS_X },
+  portrait: { dir: "/hero/frames-p", count: 50, focusX: 0.55 },
+}
+const frameSrc = (dir: string, i: number) => `${dir}/${String(i + 1).padStart(4, "0")}.webp`
 
-type Mode = "play" | "static"
+type Mode = "video" | "frames" | "static"
 
-const detectMode = (): Mode => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "static" : "play")
-const pickVideo = () => (matchMedia("(orientation: portrait)").matches ? VIDEOS.portrait : VIDEOS.landscape)
+function detectMode(): Mode {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return "static"
+  if (matchMedia("(pointer: coarse), (max-width: 767px)").matches) return "frames"
+  return "video"
+}
 
-/** Duração da abertura inteira, em segundos (1 unidade do roteiro). */
-const INTRO_SECONDS = 7.5
-/** Pausa para o título de abertura ser lido antes da onda correr. */
-const TITLE_HOLD_MS = 1400
-/** Espera máxima pelo vídeo antes de a abertura seguir sem ele. */
-const MEDIA_WAIT_MS = 2500
+/** Distância de rolagem do hero fixado (curta = responde rápido). */
+const PIN_DISTANCE = "+=120%"
 
 interface WaveHeroProps {
   title?: string
@@ -44,8 +47,8 @@ export function WaveHero({
 }: WaveHeroProps) {
   const scope = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mode] = useState<Mode>(detectMode)
-  const [video] = useState(pickVideo)
   const [mediaReady, setMediaReady] = useState(false)
   // Som: o navegador só libera áudio após um gesto, então ele começa
   // desligado; o botão SOM no canto liga/desliga a qualquer momento.
@@ -91,93 +94,161 @@ export function WaveHero({
       const root = scope.current!
       const q = gsap.utils.selector(root)
 
+      // ── Mídia controlada pelo scroll ────────────────────────────
+      let render: (p: number) => void = () => {}
       const cleanups: Array<() => void> = []
-      const videoEl = videoRef.current!
-      const onLoaded = () => setMediaReady(true)
-      videoEl.addEventListener("loadeddata", onLoaded)
-      if (videoEl.readyState >= 2) onLoaded()
-      cleanups.push(() => videoEl.removeEventListener("loadeddata", onLoaded))
+
+      if (mode === "video") {
+        const video = videoRef.current!
+        let seeking = false
+        let pending: number | null = null
+        const onSeeked = () => {
+          seeking = false
+          if (pending !== null) {
+            const t = pending
+            pending = null
+            seeking = true
+            video.currentTime = t
+          }
+        }
+        const onLoaded = () => setMediaReady(true)
+        video.addEventListener("seeked", onSeeked)
+        video.addEventListener("loadeddata", onLoaded)
+        if (video.readyState >= 2) onLoaded()
+        cleanups.push(() => {
+          video.removeEventListener("seeked", onSeeked)
+          video.removeEventListener("loadeddata", onLoaded)
+        })
+        render = (p) => {
+          const end = (video.duration || 4.5) - 0.05
+          const t = p * end
+          if (seeking) pending = t
+          else {
+            seeking = true
+            video.currentTime = t
+          }
+        }
+      } else {
+        const canvas = canvasRef.current!
+        const ctx = canvas.getContext("2d")!
+        const set = window.innerHeight > window.innerWidth ? FRAME_SETS.portrait : FRAME_SETS.landscape
+        // O 1º quadro vem primeiro (é a primeira tela); os demais em seguida,
+        // em ordem — o começo da onda já está pronto quando a pessoa rola.
+        const images: HTMLImageElement[] = []
+        const load = (i: number) => {
+          const img = new Image()
+          img.decoding = "async"
+          img.onload = () => {
+            if (i === current || !ready(images[current])) draw()
+          }
+          img.src = frameSrc(set.dir, i)
+          images[i] = img
+        }
+        const ready = (img?: HTMLImageElement) => Boolean(img?.complete && img.naturalWidth)
+        load(0)
+        let restStarted = false
+        const loadRest = () => {
+          if (restStarted) return
+          restStarted = true
+          for (let i = 1; i < set.count; i++) load(i)
+        }
+        // Mas sem disputar banda com a primeira tela: espera o load da página,
+        // a não ser que a pessoa toque/role antes disso.
+        const INTENT = ["wheel", "touchstart", "keydown", "pointerdown"] as const
+        INTENT.forEach((ev) => window.addEventListener(ev, loadRest, { once: true, passive: true }))
+        const afterLoad = () => window.setTimeout(loadRest, 200)
+        if (document.readyState === "complete") afterLoad()
+        else window.addEventListener("load", afterLoad, { once: true })
+        cleanups.push(() => {
+          INTENT.forEach((ev) => window.removeEventListener(ev, loadRest))
+          window.removeEventListener("load", afterLoad)
+        })
+
+        let current = 0
+        const draw = () => {
+          // Quadro pedido ainda não chegou? Mostra o carregado mais próximo antes dele.
+          let k = current
+          while (k > 0 && !ready(images[k])) k--
+          const img = images[k]
+          if (!ready(img)) return
+          const cw = canvas.width
+          const ch = canvas.height
+          const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight)
+          const w = img.naturalWidth * scale
+          const h = img.naturalHeight * scale
+          const x = Math.min(0, Math.max(cw - w, cw / 2 - w * set.focusX))
+          ctx.imageSmoothingQuality = "high"
+          ctx.clearRect(0, 0, cw, ch)
+          ctx.drawImage(img, x, (ch - h) / 2, w, h)
+        }
+        const resize = () => {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2)
+          canvas.width = Math.round(canvas.clientWidth * dpr)
+          canvas.height = Math.round(canvas.clientHeight * dpr)
+          draw()
+        }
+        images[0].addEventListener("load", () => {
+          setMediaReady(true)
+          resize()
+        })
+        resize()
+        window.addEventListener("resize", resize)
+        cleanups.push(() => window.removeEventListener("resize", resize))
+        render = (p) => {
+          const next = Math.round(p * (set.count - 1))
+          if (next !== current) {
+            current = next
+            draw()
+          }
+        }
+      }
 
       const endItems = q("[data-end-item]")
       const cta = q("[data-cta]")[0] as HTMLElement
       gsap.set(endItems, { autoAlpha: 0, y: 24, filter: "blur(8px)" })
-      gsap.set(q("[data-hint]"), { autoAlpha: 0 })
 
-      // ── Roteiro da abertura (1 unidade = INTRO_SECONDS) ─────────
-      // Mesmas marcas do antigo roteiro por scroll, agora tocadas sozinhas.
-      const tl = gsap.timeline({ paused: true, defaults: { ease: "none" } })
-      tl.timeScale(1 / INTRO_SECONDS)
-      // O som segue o mesmo relógio da imagem (a quebra coincide com o escurecimento).
-      tl.eventCallback("onUpdate", () => soundRef.current?.update(Math.min(tl.time(), 1)))
+      // ── Roteiro do scroll (duração total = 1) ───────────────────
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: PIN_DISTANCE,
+          pin: true,
+          scrub: 0.25,
+          anticipatePin: 1,
+          onLeave: () => {
+            insideRef.current = false
+            soundRef.current?.setInside(false)
+          },
+          onEnterBack: () => {
+            insideRef.current = true
+            soundRef.current?.setInside(true)
+          },
+        },
+      })
+      // O som segue o mesmo relógio suavizado (scrub) da imagem, não o scroll cru.
+      // No fim do roteiro o CTA acende (vermelho + pulso); volta ao rolar para cima.
+      tl.eventCallback("onUpdate", () => {
+        soundRef.current?.update(tl.progress())
+        cta.classList.toggle("cta-live", tl.progress() > 0.97)
+      })
 
-      // A onda (vídeo) ocupa as primeiras 0,6 unidades.
-      tl.to(q("[data-media]"), { scale: 1.06, duration: 0.6, ease: "sine.inOut" }, 0)
-      tl.to(q("[data-title]"), { autoAlpha: 0, y: -24, filter: "blur(10px)", duration: 0.12, ease: "power2.in" }, 0.16)
-      tl.to(q("[data-shade]"), { opacity: 0.92, duration: 0.16, ease: "power1.inOut" }, 0.5)
+      const proxy = { p: 0 }
+      tl.to(proxy, { p: 1, duration: 0.6, onUpdate: () => render(proxy.p) }, 0)
+      tl.to(q("[data-media]"), { scale: 1.06, duration: 0.6 }, 0)
+      tl.to(q("[data-hint]"), { autoAlpha: 0, duration: 0.03 }, 0)
+      tl.to(q("[data-title]"), { autoAlpha: 0, y: -24, filter: "blur(10px)", duration: 0.25 }, 0)
+      tl.to(q("[data-shade]"), { opacity: 0.92, duration: 0.16 }, 0.5)
 
       // Traço do símbolo: velocidade de caneta constante ao longo da linha.
       addSymbolDraw(tl, root, 0.58, 0.3)
 
       tl.to(endItems, { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.1, stagger: 0.03, ease: "power2.out" }, 0.84)
       tl.fromTo(q("[data-progress]"), { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0)
-      tl.to(q("[data-progress]"), { autoAlpha: 0, duration: 0.05 }, 1)
-      // Fim: o CTA acende (cor de acento + pulso) e a dica de rolagem aparece.
-      tl.call(() => cta.classList.add("cta-live"), undefined, 1)
-      tl.to(q("[data-hint]"), { autoAlpha: 1, duration: 0.06 }, 1.04)
-
-      // Link direto para uma seção: a abertura já aparece pronta.
-      const hash = location.hash.slice(1)
-      if (hash && hash !== "topo") {
-        tl.progress(1)
-      } else {
-        // A timeline parte quando o vídeo de fato começa a tocar (ou segue sem
-        // ele se o navegador bloquear/demorar — o pôster fica no lugar).
-        let started = false
-        let wait = 0
-        const start = () => {
-          if (started) return
-          started = true
-          window.clearTimeout(wait)
-          tl.play()
-        }
-        // Velocidade ajustada para a onda caber no trecho dela no roteiro.
-        const fit = () => {
-          if (videoEl.duration) videoEl.playbackRate = videoEl.duration / (0.6 * INTRO_SECONDS)
-        }
-        const hold = window.setTimeout(() => {
-          fit()
-          videoEl.addEventListener("loadedmetadata", fit, { once: true })
-          videoEl.addEventListener("playing", start, { once: true })
-          videoEl.play().catch(start)
-          wait = window.setTimeout(start, MEDIA_WAIT_MS)
-        }, TITLE_HOLD_MS)
-        cleanups.push(() => {
-          window.clearTimeout(hold)
-          window.clearTimeout(wait)
-          videoEl.removeEventListener("loadedmetadata", fit)
-          videoEl.removeEventListener("playing", start)
-        })
-      }
-      cleanups.push(() => tl.kill())
-
-      // Som só dentro do hero.
-      const inside = ScrollTrigger.create({
-        trigger: root,
-        start: "top top",
-        end: "bottom top",
-        onLeave: () => {
-          insideRef.current = false
-          soundRef.current?.setInside(false)
-        },
-        onEnterBack: () => {
-          insideRef.current = true
-          soundRef.current?.setInside(true)
-        },
-      })
-      cleanups.push(() => inside.kill())
 
       // ── Botão magnético (só ponteiro fino) ──────────────────────
-      if (matchMedia("(pointer: fine)").matches) {
+      if (mode === "video") {
         const btn = cta
         const xTo = gsap.quickTo(btn, "x", { duration: 0.4, ease: "power3.out" })
         const yTo = gsap.quickTo(btn, "y", { duration: 0.4, ease: "power3.out" })
@@ -200,7 +271,7 @@ export function WaveHero({
     { scope, dependencies: [mode] },
   )
 
-  // ── Título de abertura (load) ──
+  // ── Abertura (load) ──
   useGSAP(
     () => {
       if (mode === "static") return
@@ -233,21 +304,29 @@ export function WaveHero({
             style={{ objectPosition: `${FOCUS_X * 100}% 50%` }}
           />
         </picture>
-        {mode === "play" && (
+        {mode === "video" && (
           <video
             ref={videoRef}
-            src={video.src}
+            src={VIDEO_SRC}
             muted
             playsInline
             preload="auto"
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
-            style={{ opacity: mediaReady ? 1 : 0, objectPosition: `${video.focusX * 100}% 50%` }}
+            style={{ opacity: mediaReady ? 1 : 0, objectPosition: `${FOCUS_X * 100}% 50%` }}
+          />
+        )}
+        {mode === "frames" && (
+          <canvas
+            ref={canvasRef}
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full transition-opacity duration-700"
+            style={{ opacity: mediaReady ? 1 : 0 }}
           />
         )}
       </div>
 
-      {/* Vinheta fixa + escurecimento da abertura */}
+      {/* Vinheta fixa + escurecimento controlado pelo scroll */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0)_28%,rgba(0,0,0,0)_55%,rgba(0,0,0,0.75)_100%)]" />
       <div data-shade className="pointer-events-none absolute inset-0 bg-ink" style={{ opacity: isStatic ? 0.8 : 0 }} />
 

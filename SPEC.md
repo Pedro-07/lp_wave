@@ -43,21 +43,21 @@ Conteúdo:
 - Rótulos de canto: `JIU JITSU · LIFESTYLE · COMMUNITY` (sup. esq.), `EST. 2026` (sup. dir.), `SÃO LUÍS — MA` (inf. esq.; Imperatriz removido a pedido, 2026-09-28), `ROLE` + seta (inf. centro).
 - Título (início): **Toda onda nasce de uma perturbação.**
 - Fim: símbolo desenhado + naming BLACK WAVE + slogan *Just Flow* + CTA **Agendar aula experimental** (âncora para o formulário).
-Assets: `hero-onda-h.mp4` (0–4,5 s do vídeo Kling 16:9, 1280 px, 1 MB) e `hero-onda-v.mp4` (vertical própria 720×1276, 5 s, 1,2 MB) — reprodução normal, sem scrub; `poster.webp`/`poster-p.webp`, símbolo vetorizado (`symbol-draw.json`), `naming-white`, `slogan-white`.
+Assets: `hero-onda.mp4` (0–4,5 s do vídeo Kling, todos os quadros-chave, para scrub no desktop), `frames/0001–0054.webp` (paisagem de toque, 12 fps, 960 px, 1,3 MB), `frames-p/0001–0050.webp` (retrato, vídeo vertical próprio, 10 fps, 540 px q45, 2 MB), `poster.webp`/`poster-p.webp`, símbolo vetorizado (`symbol-draw.json`), `naming-white`, `slogan-white`.
 Layout desktop: vídeo em tela cheia (object-fit cover), título grande alinhado à esquerda no terço inferior, rótulos pequenos espaçados nos cantos, linha de progresso vermelha de 2 px na base.
 Layout mobile: mesmo roteiro; título em 2–3 linhas; símbolo ocupa 88% da largura.
-Abertura automática, numa etapa só (2026-09-29, a pedido: sem modal, sem precisar rolar). Sem pin: a página rola normalmente desde o início. Roteiro em unidades (1 = 7,5 s), começa quando o vídeo começa a tocar (~1,4 s após o load, para ler o título; se o navegador bloquear o vídeo, segue em 2,5 s com o pôster):
-- 0 → 0.60: vídeo toca inteiro (velocidade ajustada para caber em 4,5 s); zoom 1 → 1.06.
-- 0.16 → 0.28: título perde opacidade e ganha blur (10 px), sobe 24 px.
+Scroll (2026-09-29 v2, a pedido: sincronizado, mais sensível e mais rápido — pin por 120% da altura, scrub 0.25, sem modal; a autoplay testada antes foi descartada):
+- 0 → 0.60: vídeo 0 → 4,5 s; zoom 1 → 1.06.
+- 0 → 0.25: título perde opacidade e ganha blur (10 px), sobe 24 px.
 - 0.50 → 0.66: overlay preto 0 → 0.92 (a onda "afunda").
 - 0.58 → 0.88: traço do símbolo se desenha (máscara SVG por segmentos); o vermelho aparece por último.
 - 0.84 → 1.00: naming, slogan e CTA entram com reveal (y 24 → 0, blur 8 → 0).
-- 1.00: ênfase no CTA — acende em vermelho de acento (`.cta-live`) com um pulso de contorno a cada 2,8 s; a linha de progresso some e a dica ROLE aparece.
-Link direto para uma seção (`/#kimonos` etc.): a abertura já aparece concluída.
+- > 0.97: ênfase no CTA — acende em vermelho de acento (`.cta-live`) com pulso de contorno a cada 2,8 s; apaga se a pessoa rolar de volta.
 Entrada (load): rótulos e título com reveal por linha, 1.2 s, expo.out.
-Hover: CTA com botão magnético (só ponteiro fino).
-Som: começa desligado (sem modal); botão SOM no canto liga/desliga e segue o relógio da abertura.
-Reduced motion: mostra o poster com o símbolo completo, naming, slogan e CTA já aceso (sem pulso).
+Hover: CTA com botão magnético (só desktop).
+Mobile/iOS: sequência de imagens em canvas no lugar do vídeo. Quadros baixam logo após o load da página (ou no primeiro toque, se vier antes) — o começo da onda já responde à primeira rolagem.
+Som: começa desligado (sem modal); botão SOM no canto liga/desliga e segue o relógio da timeline.
+Reduced motion: sem pin; mostra o poster com o símbolo completo, naming, slogan e CTA já aceso (sem pulso).
 
 ### Seção 2 — A perturbação
 Objetivo: fazer quem lê se reconhecer em um motivo para começar, e apresentar a tese da marca (a perturbação é direcionada).
