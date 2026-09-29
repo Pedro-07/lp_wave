@@ -288,7 +288,7 @@ export function ModalitiesSection() {
                 </button>
               ))}
             </div>
-            <p className="hidden text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/40 lg:block">Role ou arraste ↔</p>
+            <p className="hidden text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60 lg:block">Role ou arraste ↔</p>
           </div>
         </div>
 

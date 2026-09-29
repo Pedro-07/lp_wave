@@ -78,7 +78,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="mt-[clamp(3rem,8vw,6rem)] flex flex-col gap-4 border-t border-paper/10 pt-6 text-xs text-paper/45 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-[clamp(3rem,8vw,6rem)] flex flex-col gap-4 border-t border-paper/10 pt-6 text-xs text-paper/60 sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 Black Wave Jiu Jitsu Team — São Luís, MA</p>
         <p>Identidade visual: Double Ace [CONFIRMAR]</p>
         <button type="button" onClick={() => scrollToY(0, false)} className="self-start uppercase tracking-[0.28em] transition-colors hover:text-paper sm:self-auto">
