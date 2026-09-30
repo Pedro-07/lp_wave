@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import { useIdleReady } from "@/lib/idle"
-import { gsap, SplitText } from "@/lib/scroll"
+import { gsap, ScrollTrigger, SplitText, syncScroll } from "@/lib/scroll"
 import symbol from "./symbol-draw.json"
 import { CtaLink } from "./cta-link"
 import { goToSection } from "./site-menu"
@@ -29,12 +29,33 @@ const BELTS = [
   { key: "preta", name: "Preta" },
 ]
 
-/** Passos: 0 abertura, 1–5 motivos, 6 "Aqui, ela não é evitada.", 7 "É direcionada.";
- *  +0.5 de respiro antes de soltar. */
-const LAST_STEP = MOTIVES.length + 2
+/** Passos: 0 abertura, 1–5 motivos, 6 fecho ("Aqui, ela não é evitada." e, logo
+ *  em seguida no mesmo passo, "É direcionada."); +0.5 de respiro antes de soltar. */
+const LAST_STEP = MOTIVES.length + 1
 const TOTAL = LAST_STEP + 0.5
-/** Rolagem por passo, em fração da altura da tela. */
-const STEP_VH = 0.7
+/** Rolagem por passo, em fração da altura da tela (trilha inteira ≈ 3 telas). */
+const STEP_VH = 0.45
+/** Velocidade (px/s) a partir da qual a rolagem é "com pressa": atravessa a trilha. */
+const FAST_SCROLL = 2000
+
+/** Quem já percorreu (ou pulou) a trilha não é mais segurado frase a frase. */
+const SEEN_KEY = "bw-trilha-vista"
+function trailSeen() {
+  try {
+    return localStorage.getItem(SEEN_KEY) === "1"
+  } catch {
+    return false
+  }
+}
+export function markTrailSeen() {
+  try {
+    localStorage.setItem(SEEN_KEY, "1")
+  } catch {
+    /* sem storage: vale só nesta visita (flag em memória abaixo) */
+  }
+  seenNow = true
+}
+let seenNow = false
 
 const pad = (n: number) => String(n).padStart(2, "0")
 const beltSrcSet = (key: string) => `/faixa/faixa-${key}-m.webp 1000w, /faixa/faixa-${key}.webp 2000w`
@@ -121,6 +142,43 @@ export function PerturbationSection() {
 
       // Pontos de encaixe: cada passo inteiro + fim.
       const points = [...Array.from({ length: LAST_STEP + 1 }, (_, i) => i / TOTAL), 1]
+      seenNow = seenNow || trailSeen()
+      // Última rolagem "com pressa" (instante e sentido).
+      let fastAt = -Infinity
+      let fastDir = 1
+      // Pressa = vários eventos de rolagem rápidos em sequência (~300 ms). Um
+      // salto (menu, link direto, "Pular") é um evento só, grande, e não conta.
+      let lastY = window.scrollY
+      let lastT = performance.now()
+      let hits: number[] = []
+      const onScroll = () => {
+        const now = performance.now()
+        const dy = window.scrollY - lastY
+        const dt = Math.max(1, now - lastT)
+        lastY = window.scrollY
+        lastT = now
+        if (Math.abs(dy) > window.innerHeight * 1.5) return
+        if ((Math.abs(dy) / dt) * 1000 < FAST_SCROLL) return
+        hits = [...hits.filter((t) => now - t < 300), now]
+        if (hits.length >= 3) {
+          fastAt = now
+          fastDir = Math.sign(dy)
+        }
+      }
+      window.addEventListener("scroll", onScroll, { passive: true })
+      /** Encaixe: rolagem calma para no próximo passo (no sentido da rolagem);
+       *  com pressa atravessa até a ponta da trilha; quem já viu não é segurado. */
+      const snapTo = (value: number, self?: ScrollTrigger) => {
+        if (seenNow) return value
+        // A rolagem suave ainda desacelera por ~1 s depois do gesto: a pressa vale
+        // até o próximo encaixe (no máx. 2,5 s) e é zerada quando ele termina.
+        if (performance.now() - fastAt < 2500) return fastDir > 0 ? 1 : 0
+        const nearest = gsap.utils.snap(points, value)
+        if (Math.abs(nearest - value) < 0.003) return nearest
+        return (self?.direction ?? 1) > 0
+          ? (points.find((pt) => pt >= value) ?? 1)
+          : ([...points].reverse().find((pt) => pt <= value) ?? 0)
+      }
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -132,12 +190,17 @@ export function PerturbationSection() {
           scrub: 0.6,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          // Sem inércia: o encaixe vai para o passo mais próximo na direção da
+          // Chegou ao fim da trilha (rolando ou saltando): da próxima vez, livre.
+          onLeave: markTrailSeen,
+          // Sem inércia: o encaixe vai para o passo seguinte na direção da
           // rolagem, em vez de projetar pela velocidade (o que pulava frases).
           snap: {
-            snapTo: points,
+            snapTo,
             inertia: false,
-            directional: true,
+            onComplete: () => {
+              fastAt = -Infinity
+              syncScroll()
+            },
             duration: { min: 0.25, max: 0.7 },
             delay: 0.08,
             ease: "power2.inOut",
@@ -151,19 +214,20 @@ export function PerturbationSection() {
       for (let k = 1; k < scenes.length; k++) {
         const prev = scenes[k - 1]
         const next = scenes[k]
+        const last = k === scenes.length - 1
         tl.to(
           prev,
           { yPercent: -50, autoAlpha: 0, filter: "blur(8px)", duration: 0.22, stagger: 0.12 / prev.length, ease: "power2.in" },
-          k - 0.55,
+          k - 0.62,
         )
-        tl.to(next, { ...shown, duration: 0.3, stagger: 0.16 / next.length, ease: "power3.out" }, k - 0.3)
+        tl.to(next, { ...shown, duration: last ? 0.22 : 0.3, stagger: 0.16 / next.length, ease: "power3.out" }, last ? k - 0.44 : k - 0.3)
       }
-      // Último passo: "Aqui, ela não é evitada." fica e apaga para o cinza; o
-      // destaque passa para "É direcionada.", que entra embaixo.
+      // Fecho (mesmo passo): "Aqui, ela não é evitada." entra, fica e apaga para
+      // o cinza; o destaque passa para "É direcionada.", que entra embaixo.
       // Opacidade nas próprias palavras (não cor herdada do bloco): o Safari às
       // vezes não redesenha filhos com filter/transform quando a cor herdada muda.
-      tl.to(closingA, { opacity: 0.6, duration: 0.3, ease: "power2.inOut" }, LAST_STEP - 0.5)
-      tl.to(closingB, { ...shown, duration: 0.3, stagger: 0.16 / closingB.length, ease: "power3.out" }, LAST_STEP - 0.3)
+      tl.to(closingA, { opacity: 0.6, duration: 0.2, ease: "power2.inOut" }, LAST_STEP - 0.2)
+      tl.to(closingB, { ...shown, duration: 0.2, stagger: 0.12 / closingB.length, ease: "power3.out" }, LAST_STEP - 0.2)
 
       // Faixa: sobe para a cena com o 1º motivo; a cada motivo seguinte a
       // cor nova corre pelo tecido e a faixa dá um leve pulso.
@@ -189,6 +253,7 @@ export function PerturbationSection() {
         counter.textContent = pad(idx + 1)
         beltName.textContent = BELTS[idx].name
       })
+      return () => window.removeEventListener("scroll", onScroll)
     },
     { scope, dependencies: [idleReady] },
   )
@@ -294,6 +359,7 @@ export function PerturbationSection() {
               aria-label="Pular para modalidades"
               onClick={(e) => {
                 e.preventDefault()
+                markTrailSeen()
                 goToSection("modalidades")
               }}
               className="group -mr-3 flex items-center gap-3 px-3 py-3 text-paper transition-colors hover:text-accent"

@@ -54,7 +54,8 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
   4. Deployments → **Redeploy** para as variáveis valerem.
 - [ ] Modalidades: idades, horários, confirmar turma feminina só de mulheres
 - [ ] Kimonos: tamanhos disponíveis
-- [ ] Depoimentos reais (frase, nome, faixa, tempo de treino) — 3 ou mais
+- [ ] Depoimentos reais (frase, nome, faixa, tempo de treino) — 3 ou mais (o carrossel tem 6 espaços; sobra = remover)
+- [ ] Foto de cada pessoa dos depoimentos (quadrada, rosto centralizado, ~400 px) — hoje há um espaço reservado com silhueta
 - [ ] Endereço e horários da unidade São Luís
 - [ ] Instagram oficial
 - [ ] Confirmar crédito "Identidade visual: Double Ace" no rodapé

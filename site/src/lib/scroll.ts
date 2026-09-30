@@ -34,6 +34,11 @@ export function scrollToY(y: number, immediate = true) {
   else window.scrollTo({ top: y, behavior: immediate ? "auto" : "smooth" })
 }
 
+/** Alinha o Lenis à posição real da página (após um encaixe feito pelo ScrollTrigger). */
+export function syncScroll() {
+  lenis?.scrollTo(window.scrollY, { immediate: true, force: true })
+}
+
 /** Leva a página ao início de uma seção (pelo id). false = seção ainda não existe. */
 export function scrollToSection(id: string, immediate = true) {
   const el = document.getElementById(id)

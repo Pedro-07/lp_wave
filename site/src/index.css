@@ -148,10 +148,18 @@ html.lenis body {
   mask-image: radial-gradient(ellipse 60% 56% at 50% 48%, #000 64%, transparent 100%);
 }
 
-/* Depoimentos: número vazado */
-.voice-index {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+/* Depoimentos: faixa horizontal de posts (rolagem lateral nativa + encaixe) */
+.voices-track {
+  scrollbar-width: none;
+  cursor: grab;
+  overscroll-behavior-x: contain;
+}
+.voices-track::-webkit-scrollbar {
+  display: none;
+}
+.voices-track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
 }
 
 /* Texto em vermelho: tom mais claro para ter contraste AA sobre o preto.
