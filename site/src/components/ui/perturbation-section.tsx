@@ -92,7 +92,8 @@ export function PerturbationSection() {
       const hidden = { yPercent: 60, autoAlpha: 0, filter: "blur(10px)" }
       const shown = { yPercent: 0, autoAlpha: 1, filter: "blur(0px)" }
       gsap.set([...motives.flat(), ...closing], hidden)
-      gsap.set(q("[data-belt]"), { xPercent: -110, autoAlpha: 0 })
+      // A faixa entra subindo, no sentido da rolagem (a foto continua deitada).
+      gsap.set(q("[data-belt]"), { y: () => window.innerHeight * 0.35, autoAlpha: 0, filter: "blur(6px)" })
       gsap.set(q("[data-counter-row]"), { autoAlpha: 0, y: 10 })
       gsap.set(layers, { "--wipe": "100%" })
 
@@ -164,9 +165,9 @@ export function PerturbationSection() {
       tl.to(closingA, { opacity: 0.6, duration: 0.3, ease: "power2.inOut" }, LAST_STEP - 0.5)
       tl.to(closingB, { ...shown, duration: 0.3, stagger: 0.16 / closingB.length, ease: "power3.out" }, LAST_STEP - 0.3)
 
-      // Faixa: desliza para a cena com o 1º motivo; a cada motivo seguinte a
+      // Faixa: sobe para a cena com o 1º motivo; a cada motivo seguinte a
       // cor nova corre pelo tecido e a faixa dá um leve pulso.
-      tl.to(q("[data-belt]"), { xPercent: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out" }, 0.45)
+      tl.to(q("[data-belt]"), { y: 0, autoAlpha: 1, filter: "blur(0px)", duration: 0.55, ease: "power3.out" }, 0.45)
       tl.to(q("[data-counter-row]"), { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.7)
       layers.forEach((layer, i) => {
         const k = i + 2 // camada 1 (azul) chega com o 2º motivo
@@ -176,7 +177,7 @@ export function PerturbationSection() {
       })
 
       // Parallax
-      tl.fromTo(inner, { xPercent: -2, rotate: -0.6 }, { xPercent: 2, rotate: 0.6, duration: TOTAL }, 0)
+      tl.fromTo(inner, { yPercent: 14, rotate: -0.6 }, { yPercent: -14, rotate: 0.6, duration: TOTAL }, 0)
       tl.fromTo(q("[data-bg-symbol]"), { yPercent: 12 }, { yPercent: -12, duration: TOTAL }, 0)
 
       // Contador e nome da faixa

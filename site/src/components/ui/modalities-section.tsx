@@ -136,10 +136,11 @@ export function ModalitiesSection() {
     }
   }, [measure])
 
-  // Arrastar para o lado, com o dedo ou o mouse: a faixa acompanha o gesto e,
-  // ao soltar, vai para o painel seguinte/anterior (ou volta, se o gesto foi
-  // curto). Na versão fixa a faixa segue a rolagem da página, então o gesto
-  // move a página. Gesto mais vertical que horizontal = rolagem normal.
+  // Arrastar para o lado, com o dedo ou o mouse. Durante o gesto só a faixa
+  // se move (leve, acompanha o dedo sem atraso); ao soltar ela desliza até o
+  // painel seguinte/anterior — pela distância ou pela velocidade do gesto — e
+  // só então a página é posta na posição correspondente, uma vez.
+  // Gesto mais vertical que horizontal = rolagem normal da página.
   useEffect(() => {
     const el = track.current
     if (!el) return
@@ -149,27 +150,37 @@ export function ModalitiesSection() {
     let startY = 0
     let startLeft = 0
     let startActive = 0
+    let lastX = 0
+    let lastT = 0
+    let velocity = 0
     let moved = false
+    let settle: gsap.core.Tween | null = null
 
-    const setLeft = (left: number) => {
-      const max = maxScroll()
-      const x = Math.max(0, Math.min(max, left))
+    const clampLeft = (x: number) => Math.max(0, Math.min(maxScroll(), x))
+    /** Página na posição que corresponde à faixa (sem animar). */
+    const syncPage = () => {
       const st = pin.current
-      if (st) scrollToY(st.start + (x / max) * (st.end - st.start))
-      else el.scrollLeft = x
+      if (st) scrollToY(st.start + (el.scrollLeft / maxScroll()) * (st.end - st.start))
     }
-    const end = () => {
+    const release = () => {
       state = "idle"
-      dragging.current = false
       el.classList.remove("is-dragging")
     }
     const down = (e: PointerEvent) => {
       if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return
+      // Tocou de novo enquanto a faixa ainda deslizava: para onde está.
+      if (settle?.isActive()) {
+        settle.kill()
+        syncPage()
+        dragging.current = false
+      }
       state = "pending"
       pointer = e.pointerId
       moved = false
-      startX = e.clientX
+      startX = lastX = e.clientX
       startY = e.clientY
+      lastT = e.timeStamp
+      velocity = 0
       startLeft = el.scrollLeft
       startActive = activeRef.current
     }
@@ -188,16 +199,38 @@ export function ModalitiesSection() {
         dragging.current = true
         el.classList.add("is-dragging")
       }
-      setLeft(startLeft - dx)
+      const dt = e.timeStamp - lastT
+      if (dt > 0) velocity = 0.8 * ((e.clientX - lastX) / dt) + 0.2 * velocity
+      lastX = e.clientX
+      lastT = e.timeStamp
+      el.scrollLeft = clampLeft(startLeft - dx)
     }
     const up = (e: PointerEvent) => {
       if (e.pointerId !== pointer) return
       const wasDrag = state === "drag"
-      end()
+      release()
       if (!wasDrag) return
       const dx = e.clientX - startX
-      const limit = Math.min(80, el.clientWidth * 0.12)
-      goRef.current(startActive + (dx < -limit ? 1 : dx > limit ? -1 : 0))
+      // Arraste longo ou gesto rápido (px/ms) troca de painel; curto e lento volta.
+      const limit = Math.min(60, el.clientWidth * 0.1)
+      const dir = dx < -limit || velocity < -0.35 ? 1 : dx > limit || velocity > 0.35 ? -1 : 0
+      const target = Math.max(0, Math.min(MODS.length - 1, startActive + dir))
+      settle = gsap.to(el, {
+        scrollLeft: stops()[target] * maxScroll(),
+        duration: 0.45,
+        ease: "power3.out",
+        onComplete: () => {
+          syncPage()
+          requestAnimationFrame(() => (dragging.current = false))
+        },
+      })
+    }
+    const cancel = () => {
+      if (state === "drag") {
+        syncPage()
+        dragging.current = false
+      }
+      release()
     }
     // Depois de arrastar, o clique não deve disparar links.
     const click = (e: MouseEvent) => {
@@ -210,16 +243,17 @@ export function ModalitiesSection() {
     el.addEventListener("pointerdown", down)
     window.addEventListener("pointermove", move)
     window.addEventListener("pointerup", up)
-    window.addEventListener("pointercancel", end)
+    window.addEventListener("pointercancel", cancel)
     el.addEventListener("click", click, true)
     return () => {
+      settle?.kill()
       el.removeEventListener("pointerdown", down)
       window.removeEventListener("pointermove", move)
       window.removeEventListener("pointerup", up)
-      window.removeEventListener("pointercancel", end)
+      window.removeEventListener("pointercancel", cancel)
       el.removeEventListener("click", click, true)
     }
-  }, [])
+  }, [stops])
 
   const go = (i: number) => {
     const target = stops()[Math.max(0, Math.min(MODS.length - 1, i))]
@@ -268,7 +302,8 @@ export function ModalitiesSection() {
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          el.scrollLeft = self.progress * maxScroll()
+          // Durante o arraste quem manda na faixa é o dedo.
+          if (!dragging.current) el.scrollLeft = self.progress * maxScroll()
         },
         snap: {
           // Painéis + o fim (painel "Ainda em dúvida?" e saída da seção).

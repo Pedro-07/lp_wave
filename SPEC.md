@@ -176,3 +176,6 @@ Título **Aula experimental**; campos nome, WhatsApp, modalidade (pré-marcada),
   - Seção 2 (trilha): barra na base enquanto fixa — "Continue rolando ↓" à esq. e "Pular para modalidades →" à dir. ("Pular →" no celular).
   - Modalidades: arrastar para o lado com dedo ou mouse; a faixa acompanha o gesto e, ao soltar, vai ao painel seguinte/anterior (gesto curto volta). Gesto vertical continua rolando a página (touch-action: pan-y). Dica "Arraste ↔" também no celular.
   - `setScrollLocked` virou contador (menu e gaveta podem se sobrepor).
+- Ajustes (2026-09-30):
+  - Seção 2: a faixa entra subindo por baixo (35vh → 0, com blur), no sentido da rolagem; o balanço de parallax virou vertical. A foto continua deitada e a cor segue correndo pelo tecido.
+  - Modalidades, arraste: durante o gesto só a faixa se move (a página não rola a cada movimento — era o que travava no celular); ao soltar, a faixa desliza (0,45 s) até o painel seguinte/anterior e a página é ajustada uma vez. Troca de painel por distância (> 10% da largura, máx. 60 px) ou velocidade (> 0,35 px/ms). Gesto vertical sobre a faixa rola a página.
