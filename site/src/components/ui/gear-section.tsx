@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react"
 import { useIdleReady } from "@/lib/idle"
 import { gsap, ScrollTrigger, SplitText } from "@/lib/scroll"
 import { whatsappLink } from "@/config"
+import { WhatsappIcon } from "./whatsapp-icon"
 import { Viewer360 } from "./viewer-360"
 
 // Seção 5 — Kimonos (SPEC.md §4). Divisória "KIMONOS" com texto corrido do patch
@@ -209,10 +210,8 @@ export function GearSection() {
               rel="noopener noreferrer"
               className="group inline-flex items-center justify-between gap-4 self-start bg-paper px-7 py-5 text-sm uppercase tracking-[0.24em] text-ink transition-colors duration-300 hover:bg-accent hover:text-paper"
             >
-              Quero este kimono
-              <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-              </svg>
+              Pedir pelo WhatsApp
+              <WhatsappIcon size={20} />
             </a>
             <p className="-mt-4 text-xs text-paper/50">A compra é finalizada no WhatsApp da equipe.</p>
           </div>

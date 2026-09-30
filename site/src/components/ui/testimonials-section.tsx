@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
+import { CtaLink } from "./cta-link"
 
 // Seção 6 — Vozes do tatame (SPEC.md §4, v2). Passagem rápida: uma faixa
 // horizontal de depoimentos em formato de post/comentário (foto, nome, faixa,
@@ -298,6 +299,12 @@ export function TestimonialsSection() {
           </li>
         ))}
       </ul>
+
+      {/* Próximo passo: de quem já está no tatame para a aula de quem lê */}
+      <div className="mt-[clamp(1.75rem,4vw,3rem)] flex flex-wrap items-center gap-x-6 gap-y-3 px-[var(--gutter)]">
+        <CtaLink href="#aula-experimental">Quero fazer parte</CtaLink>
+        <p className="text-sm text-paper/60">A primeira aula é experimental.</p>
+      </div>
     </section>
   )
 }

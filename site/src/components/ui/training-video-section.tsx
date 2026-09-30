@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
+import { goToSection } from "./site-menu"
 import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 
@@ -187,9 +188,13 @@ export function TrainingVideoSection() {
             </button>
             <a
               href="#modalidades"
+              onClick={(e) => {
+                e.preventDefault()
+                goToSection("modalidades")
+              }}
               className="group inline-flex items-center gap-4 border border-paper/40 px-5 py-4 text-xs uppercase tracking-[0.18em] transition-colors duration-300 hover:border-accent hover:bg-accent sm:px-7 sm:text-sm sm:tracking-[0.24em]"
             >
-              Conheça as modalidades
+              Escolha sua modalidade
               <svg width="12" height="16" viewBox="0 0 12 16" aria-hidden="true" className="transition-transform duration-300 group-hover:translate-y-1">
                 <path d="M6 0v14M1 9l5 5 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" />
               </svg>

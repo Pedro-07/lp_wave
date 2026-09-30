@@ -4,6 +4,8 @@ import { useIdleReady } from "@/lib/idle"
 import { gsap, ScrollTrigger, scrollToY, SplitText } from "@/lib/scroll"
 import type { Modalidade } from "@/config"
 import { CtaLink } from "./cta-link"
+import { WhatsappIcon } from "./whatsapp-icon"
+import { whatsappLink } from "@/config"
 
 // Seção 4 — Modalidades (SPEC.md §4). A seção fica fixa (pin) e a rolagem
 // vertical move o carrossel para o lado; rolar/arrastar para o lado também
@@ -471,10 +473,21 @@ export function ModalitiesSection() {
                         tabIndex={on ? 0 : -1}
                         className="group mt-6 inline-flex items-center gap-4 border border-paper/40 bg-ink/40 px-5 py-3.5 text-xs uppercase tracking-[0.18em] backdrop-blur-sm transition-colors duration-300 hover:border-accent hover:bg-accent sm:text-sm"
                       >
-                        Agendar aula de {m.name}
+                        <span className="max-sm:hidden">Agendar aula de {m.name}</span>
+                        <span className="sm:hidden">Agendar esta aula</span>
                         <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
                           <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
                         </svg>
+                      </a>
+                      <a
+                        href={whatsappLink(`Olá, Black Wave! Tenho uma dúvida sobre as aulas de ${m.name}.`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        tabIndex={on ? 0 : -1}
+                        className="mt-4 flex items-center gap-2.5 text-sm text-paper/80 transition-colors hover:text-paper"
+                      >
+                        <WhatsappIcon size={18} />
+                        <span className="border-b border-paper/30">Tirar dúvida no WhatsApp</span>
                       </a>
                     </div>
                   </div>

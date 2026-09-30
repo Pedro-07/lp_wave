@@ -4,10 +4,14 @@ import { useGSAP } from "@gsap/react"
 import { trapFocus } from "@/lib/focus-trap"
 import { gsap, setScrollLocked } from "@/lib/scroll"
 import { MODALIDADES, whatsappLink, type Modalidade } from "@/config"
+import { WhatsappIcon } from "./whatsapp-icon"
 
 // Gaveta "Aula experimental" (SPEC.md §4). Todo link para #aula-experimental
 // abre a gaveta em vez de rolar a página; data-modalidade pré-marca a escolha.
 // O envio monta a mensagem e abre o WhatsApp (decisão do cliente).
+// Mínimo de atrito: só o nome é obrigatório (o número a equipe já recebe pelo
+// próprio WhatsApp); idade e experiência ficam recolhidas, opcionais; e há o
+// atalho "falar direto no WhatsApp" para quem não quer preencher nada.
 
 type Choice = Modalidade | "Ainda não sei"
 
@@ -69,8 +73,10 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null
     setScrollLocked(true)
-    firstField.current?.focus({ preventScroll: true })
     const panel = root.current?.querySelector<HTMLElement>("[data-drawer-panel]")
+    // No celular, focar o campo abriria o teclado por cima das opções.
+    if (isMobile) panel?.focus({ preventScroll: true })
+    else firstField.current?.focus({ preventScroll: true })
     const release = panel ? trapFocus(panel) : undefined
     return () => {
       release?.()
@@ -115,22 +121,20 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
     e.preventDefault()
     const data = new FormData(e.currentTarget)
     const nome = String(data.get("nome") ?? "").trim()
-    const whatsapp = String(data.get("whatsapp") ?? "").trim()
     const idade = String(data.get("idade") ?? "").trim()
     const next: Record<string, string> = {}
     if (nome.length < 2) next.nome = "Diga como podemos te chamar."
-    if (whatsapp.replace(/\D/g, "").length < 10) next.whatsapp = "Informe um WhatsApp com DDD."
     setErrors(next)
     if (Object.keys(next).length) return
 
+    const qual = modalidade && modalidade !== "Ainda não sei" ? ` de ${modalidade}` : ""
     const linhas = [
-      "Olá, Black Wave! Quero agendar uma aula experimental.",
+      `Olá, Black Wave! Quero agendar uma aula experimental${qual}.`,
       "",
       `Nome: ${nome}`,
-      `Modalidade: ${modalidade ?? "Ainda não sei"}`,
+      qual ? null : "Modalidade: ainda não sei, quero ajuda para escolher",
       idade ? `${modalidade === "Kids" ? "Idade da criança" : "Idade"}: ${idade}` : null,
-      `Experiência: ${experiencia ?? "Não informei"}`,
-      `Meu WhatsApp: ${whatsapp}`,
+      experiencia ? `Experiência: ${experiencia === "Nunca treinei" ? "nunca treinei" : `faixa ${experiencia.toLowerCase()}`}` : null,
     ].filter((l) => l !== null)
     window.open(whatsappLink(linhas.join("\n")), "_blank", "noopener")
     setSent(true)
@@ -152,6 +156,7 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        tabIndex={-1}
         className="absolute inset-x-0 bottom-0 flex max-h-[92svh] flex-col overflow-y-auto border-t border-paper/15 bg-ink text-paper md:inset-y-0 md:right-0 md:left-auto md:max-h-none md:w-[min(34rem,100%)] md:border-t-0 md:border-l"
       >
         <div className="flex items-start justify-between px-[clamp(1.5rem,3vw,2.5rem)] pt-[clamp(1.5rem,4vh,2.5rem)]">
@@ -192,18 +197,6 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
               Aula experimental
             </h2>
 
-            <label data-drawer-item className="block">
-              <span className={label}>Nome</span>
-              <input ref={firstField} name="nome" autoComplete="name" className={input} placeholder="Como podemos te chamar" />
-              {errors.nome && <span className="mt-2 block text-sm text-accent">{errors.nome}</span>}
-            </label>
-
-            <label data-drawer-item className="block">
-              <span className={label}>WhatsApp</span>
-              <input name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" className={input} placeholder="(98) 9 0000-0000" />
-              {errors.whatsapp && <span className="mt-2 block text-sm text-accent">{errors.whatsapp}</span>}
-            </label>
-
             <fieldset data-drawer-item>
               <legend className={label}>Modalidade</legend>
               <div className="mt-4 flex flex-wrap gap-2">
@@ -216,43 +209,65 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
             </fieldset>
 
             <label data-drawer-item className="block">
-              <span className={label}>{modalidade === "Kids" ? "Idade da criança" : "Idade"}</span>
-              <input name="idade" type="number" inputMode="numeric" min={3} max={99} className={input + " max-w-[8rem]"} placeholder="—" />
+              <span className={label}>Seu nome</span>
+              <input ref={firstField} name="nome" autoComplete="given-name" enterKeyHint="send" className={input} placeholder="Como podemos te chamar" />
+              {errors.nome && <span className="mt-2 block text-sm text-accent">{errors.nome}</span>}
             </label>
 
-            <fieldset data-drawer-item>
-              <legend className={label}>Experiência</legend>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {EXPERIENCIAS.map((x) => (
-                  <button
-                    key={x.label}
-                    type="button"
-                    aria-pressed={experiencia === x.label}
-                    onClick={() => setExperiencia(x.label)}
-                    className={chip(experiencia === x.label)}
-                  >
-                    {x.color && (
-                      <span aria-hidden="true" className="h-2.5 w-5 rounded-[1px] ring-1 ring-paper/40" style={{ backgroundColor: x.color }} />
-                    )}
-                    {x.color ? `Faixa ${x.label.toLowerCase()}` : x.label}
-                  </button>
-                ))}
+            <details data-drawer-item className="group/more">
+              <summary className="flex cursor-pointer list-none items-center gap-3 text-sm text-paper/70 transition-colors hover:text-paper [&::-webkit-details-marker]:hidden">
+                <span className="grid size-5 place-items-center border border-paper/30 text-xs transition-transform group-open/more:rotate-45">+</span>
+                Adicionar idade e experiência (opcional)
+              </summary>
+              <div className="mt-6 flex flex-col gap-8">
+                <label className="block">
+                  <span className={label}>{modalidade === "Kids" ? "Idade da criança" : "Idade"}</span>
+                  <input name="idade" type="number" inputMode="numeric" min={3} max={99} className={input + " max-w-[8rem]"} placeholder="—" />
+                </label>
+                <fieldset>
+                  <legend className={label}>Experiência</legend>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {EXPERIENCIAS.map((x) => (
+                      <button
+                        key={x.label}
+                        type="button"
+                        aria-pressed={experiencia === x.label}
+                        onClick={() => setExperiencia(x.label)}
+                        className={chip(experiencia === x.label)}
+                      >
+                        {x.color && (
+                          <span aria-hidden="true" className="h-2.5 w-5 rounded-[1px] ring-1 ring-paper/40" style={{ backgroundColor: x.color }} />
+                        )}
+                        {x.color ? `Faixa ${x.label.toLowerCase()}` : x.label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
               </div>
-            </fieldset>
+            </details>
 
             <button
               data-drawer-item
               type="submit"
-              className="group mt-2 inline-flex items-center justify-between gap-4 bg-paper px-7 py-5 text-sm uppercase tracking-[0.24em] text-ink transition-colors duration-300 hover:bg-accent hover:text-paper"
+              className="group mt-2 inline-flex items-center justify-between gap-4 bg-paper px-7 py-5 text-sm uppercase tracking-[0.16em] text-ink sm:tracking-[0.24em] transition-colors duration-300 hover:bg-accent hover:text-paper"
             >
-              Quero agendar
-              <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-              </svg>
+              Agendar pelo WhatsApp
+              <WhatsappIcon size={20} />
             </button>
             <p data-drawer-item className="-mt-4 text-xs leading-relaxed text-paper/50">
-              Ao enviar, abrimos o WhatsApp com a sua mensagem pronta. Nada é salvo neste site.
+              Abrimos o WhatsApp com a sua mensagem pronta; é só enviar. Nada é salvo neste site.
             </p>
+            <a
+              data-drawer-item
+              href={whatsappLink(
+                `Olá, Black Wave! Quero saber mais sobre a aula experimental${modalidade && modalidade !== "Ainda não sei" ? ` de ${modalidade}` : ""}.`,
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="-mt-2 inline-flex items-center gap-3 self-start border-b border-paper/30 pb-1 text-sm text-paper/80 transition-colors hover:border-paper hover:text-paper"
+            >
+              Prefiro falar direto no WhatsApp
+            </a>
           </form>
         )}
       </div>
