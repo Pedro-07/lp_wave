@@ -1,6 +1,6 @@
 # Black Wave — Pendências do site
 
-Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta lista.
+Atualizado em 2026-09-30. Itens marcados [PREENCHER] no site dependem desta lista.
 
 ## Briefing já respondido
 - Tipo: site de lançamento da marca
@@ -13,6 +13,7 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 
 ## Conteúdo (cliente)
 - [ ] Professores: nome, faixa/grau, linhagem, tempo de ensino, títulos reais
+  - Sugestão (2026-09-30): seção curta de professores, no formato compacto dos depoimentos (foto, nome, faixa, linhagem) — ainda não existe no site; propor ao cliente
 - [ ] Diferencial concreto da equipe (um fato, não adjetivo)
 - [ ] Qual unidade está ativa; endereço e horários
 - [ ] Data de abertura da segunda unidade
@@ -20,7 +21,7 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Números reais (alunos, anos de tatame, títulos) — nada será inventado
 
 ## Formulário
-- [x] Campos definidos: nome, WhatsApp, modalidade, idade, experiência (unidade dispensada — só São Luís)
+- [x] Campos definidos (2026-09-30, versão curta): modalidade + nome (obrigatório); idade e experiência opcionais. Sem campo WhatsApp — a pessoa já envia pelo próprio WhatsApp
 - [x] Destino: WhatsApp (mensagem montada pela gaveta)
 
 ## Assets
@@ -35,7 +36,8 @@ Atualizado em 2026-09-28. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Domínio e hospedagem
 - [ ] Prazo
 - [ ] Idiomas (só PT?)
-- [ ] Analytics / pixel?
+- [ ] Analytics / pixel? (medir cliques nos botões de aula e WhatsApp)
+- [ ] Testar em celular real (iPhone e Android): arraste das modalidades, trilha, barra de ação
 
 ## Decisões registradas
 - Hero inspirado no MetroHero (21st.dev), **sem travar a página**: pin com GSAP ScrollTrigger + scrub; sequência de imagens no mobile/iOS.
