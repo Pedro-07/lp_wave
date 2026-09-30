@@ -107,40 +107,80 @@ export function ModalitiesSection() {
     setActive(best)
   }, [])
 
+  /** Página na posição que corresponde à faixa (sem animar). */
+  const syncPage = useCallback(() => {
+    const el = track.current
+    const st = pin.current
+    if (el && st) scrollToY(st.start + (el.scrollLeft / maxScroll()) * (st.end - st.start))
+  }, [])
+
   useEffect(() => {
     const el = track.current
     if (!el) return
     let raf = 0
+    // Dedo na tela: a rolagem lateral é a nativa do navegador (com impulso e
+    // encaixe em cada painel, como nos depoimentos). A página espera o gesto
+    // e o impulso terminarem e só então acompanha, uma vez — mexer na página
+    // durante o gesto cortaria o impulso.
+    let touching = false
+    let native = false
+    let settleT = 0
+    const finishNative = () => {
+      if (touching) {
+        settleT = window.setTimeout(finishNative, 160)
+        return
+      }
+      syncPage()
+      native = false
+      el.classList.remove("is-native")
+      requestAnimationFrame(() => (dragging.current = false))
+    }
     const onScroll = () => {
-      // Movimento lateral feito pela pessoa (trackpad, dedo, arraste) leva a
-      // página junto. Se a faixa está onde a rolagem vertical a colocou, o
-      // evento é eco do próprio sincronismo e é ignorado (comparar posições é
-      // mais confiável que um sinal de tempo com a rolagem suave do Lenis).
+      // Se a faixa está onde a rolagem vertical a colocou, o evento é eco do
+      // próprio sincronismo e é ignorado (comparar posições é mais confiável
+      // que um sinal de tempo com a rolagem suave do Lenis).
       const st = pin.current
-      if (st && !dragging.current) {
-        const expected = st.progress * maxScroll()
-        if (Math.abs(el.scrollLeft - expected) > 2) {
-          scrollToY(st.start + (el.scrollLeft / maxScroll()) * (st.end - st.start))
+      if (st) {
+        const moved = Math.abs(el.scrollLeft - st.progress * maxScroll()) > 2
+        if (native || (touching && moved)) {
+          if (!native) {
+            native = true
+            dragging.current = true
+            el.classList.add("is-native")
+          }
+          window.clearTimeout(settleT)
+          settleT = window.setTimeout(finishNative, 160)
+        } else if (!dragging.current && moved) {
+          // Trackpad / rolagem lateral do mouse: a página acompanha na hora.
+          syncPage()
         }
       }
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(measure)
     }
+    const touchStart = () => (touching = true)
+    const touchEnd = () => (touching = false)
     measure()
     el.addEventListener("scroll", onScroll, { passive: true })
+    el.addEventListener("touchstart", touchStart, { passive: true })
+    el.addEventListener("touchend", touchEnd, { passive: true })
+    el.addEventListener("touchcancel", touchEnd, { passive: true })
     window.addEventListener("resize", onScroll)
     return () => {
       el.removeEventListener("scroll", onScroll)
+      el.removeEventListener("touchstart", touchStart)
+      el.removeEventListener("touchend", touchEnd)
+      el.removeEventListener("touchcancel", touchEnd)
       window.removeEventListener("resize", onScroll)
+      window.clearTimeout(settleT)
       cancelAnimationFrame(raf)
     }
-  }, [measure])
+  }, [measure, syncPage])
 
-  // Arrastar para o lado, com o dedo ou o mouse. Durante o gesto só a faixa
-  // se move (leve, acompanha o dedo sem atraso); ao soltar ela desliza até o
-  // painel seguinte/anterior — pela distância ou pela velocidade do gesto — e
-  // só então a página é posta na posição correspondente, uma vez.
-  // Gesto mais vertical que horizontal = rolagem normal da página.
+  // Arrastar para o lado com o mouse (o dedo usa a rolagem nativa, acima).
+  // Durante o gesto só a faixa se move; ao soltar ela desliza até o painel
+  // seguinte/anterior — pela distância ou pela velocidade do gesto — e só
+  // então a página é posta na posição correspondente, uma vez.
   useEffect(() => {
     const el = track.current
     if (!el) return
@@ -157,18 +197,13 @@ export function ModalitiesSection() {
     let settle: gsap.core.Tween | null = null
 
     const clampLeft = (x: number) => Math.max(0, Math.min(maxScroll(), x))
-    /** Página na posição que corresponde à faixa (sem animar). */
-    const syncPage = () => {
-      const st = pin.current
-      if (st) scrollToY(st.start + (el.scrollLeft / maxScroll()) * (st.end - st.start))
-    }
     const release = () => {
       state = "idle"
       el.classList.remove("is-dragging")
     }
     const down = (e: PointerEvent) => {
-      if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return
-      // Tocou de novo enquanto a faixa ainda deslizava: para onde está.
+      if (!e.isPrimary || e.pointerType !== "mouse" || e.button !== 0) return
+      // Clicou de novo enquanto a faixa ainda deslizava: para onde está.
       if (settle?.isActive()) {
         settle.kill()
         syncPage()
@@ -253,7 +288,7 @@ export function ModalitiesSection() {
       window.removeEventListener("pointercancel", cancel)
       el.removeEventListener("click", click, true)
     }
-  }, [stops])
+  }, [stops, syncPage])
 
   const go = (i: number) => {
     const target = stops()[Math.max(0, Math.min(MODS.length - 1, i))]

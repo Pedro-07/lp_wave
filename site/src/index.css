@@ -121,8 +121,13 @@ html.lenis body {
 .mods-track {
   scrollbar-width: none;
   cursor: grab;
-  /* gesto vertical = rolagem da página; o horizontal é tratado no código */
-  touch-action: pan-y;
+  scroll-padding-inline: var(--gutter);
+  overscroll-behavior-x: contain;
+}
+/* Dedo arrastando para o lado: encaixe nativo em cada painel (só durante o
+   gesto — fora dele a faixa segue a rolagem vertical, sem encaixe do navegador). */
+.mods-track.is-native {
+  scroll-snap-type: x mandatory;
 }
 .mods-track::-webkit-scrollbar {
   display: none;
