@@ -6,7 +6,7 @@ import { whatsappLink } from "@/config"
 import { WhatsappIcon } from "./whatsapp-icon"
 import { Viewer360 } from "./viewer-360"
 
-// Seção 5 — Kimonos (SPEC.md §4). Divisória "KIMONOS" com texto corrido do patch
+// Seção 6 — Kimonos (SPEC.md §4). Divisória "KIMONOS" com texto corrido do patch
 // e, em seguida, o kimono em 360° (wow nº 3): Basic/Premium × Branco/Preto.
 // A venda é concluída no WhatsApp com a mensagem pronta.
 
@@ -119,7 +119,7 @@ export function GearSection() {
 
       <div className="px-[var(--gutter)] pt-[clamp(4rem,10vw,8rem)] pb-[var(--space-section)]">
         <p className={label + " mb-6"}>
-          <span className="text-accent">05</span> — Kimonos
+          <span className="text-accent">06</span> — Kimonos
         </p>
         <h2
           id="kimonos-titulo"

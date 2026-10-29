@@ -3,7 +3,7 @@ import { useGSAP } from "@gsap/react"
 import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 
-// Seção 7 — chamada para a ouvidoria anônima (SPEC.md §4). A ouvidoria em si
+// Seção 8 — chamada para a ouvidoria anônima (SPEC.md §4). A ouvidoria em si
 // fica em /ouvidoria/ (página própria).
 
 export function OuvidoriaSection() {
@@ -50,7 +50,7 @@ export function OuvidoriaSection() {
       <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-x-[var(--gutter)]">
         <div className="lg:col-span-7">
           <p className="mb-6 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60">
-            <span className="text-accent">07</span> — Ouvidoria
+            <span className="text-accent">08</span> — Ouvidoria
           </p>
           <h2
             id="ouvidoria-titulo"

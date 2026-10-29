@@ -4,7 +4,7 @@ import { useIdleReady } from "@/lib/idle"
 import { gsap, SplitText } from "@/lib/scroll"
 import { CtaLink } from "./cta-link"
 
-// Seção 6 — Vozes do tatame (SPEC.md §4, v2). Passagem rápida: uma faixa
+// Seção 7 — Vozes do tatame (SPEC.md §4, v2). Passagem rápida: uma faixa
 // horizontal de depoimentos em formato de post/comentário (foto, nome, faixa,
 // texto). A seção não fica fixa — rolar para baixo passa direto; quem quiser
 // ler mais arrasta/rola para o lado ou usa as setas.
@@ -230,7 +230,7 @@ export function TestimonialsSection() {
       <div className="flex flex-col gap-6 px-[var(--gutter)] sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="mb-4 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60">
-            <span className="text-accent">06</span> — Vozes do tatame
+            <span className="text-accent">07</span> — Vozes do tatame
           </p>
           <h2
             id="vozes-titulo"

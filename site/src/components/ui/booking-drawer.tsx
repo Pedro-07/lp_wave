@@ -127,12 +127,12 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
     setErrors(next)
     if (Object.keys(next).length) return
 
-    const qual = modalidade && modalidade !== "Ainda não sei" ? ` de ${modalidade}` : ""
+    const qual = modalidade && modalidade !== "Ainda não sei" ? ` na turma ${modalidade}` : ""
     const linhas = [
       `Olá, Black Wave! Quero agendar uma aula experimental${qual}.`,
       "",
       `Nome: ${nome}`,
-      qual ? null : "Modalidade: ainda não sei, quero ajuda para escolher",
+      qual ? null : "Turma: ainda não sei, quero ajuda para escolher",
       idade ? `${modalidade === "Kids" ? "Idade da criança" : "Idade"}: ${idade}` : null,
       experiencia ? `Experiência: ${experiencia === "Nunca treinei" ? "nunca treinei" : `faixa ${experiencia.toLowerCase()}`}` : null,
     ].filter((l) => l !== null)
@@ -198,7 +198,7 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
             </h2>
 
             <fieldset data-drawer-item>
-              <legend className={label}>Modalidade</legend>
+              <legend className={label}>Turma</legend>
               <div className="mt-4 flex flex-wrap gap-2">
                 {[...MODALIDADES, "Ainda não sei" as const].map((m) => (
                   <button key={m} type="button" aria-pressed={modalidade === m} onClick={() => setModalidade(m)} className={chip(modalidade === m)}>
@@ -260,7 +260,7 @@ function BookingDrawer({ initial, onClose }: { initial?: Choice; onClose: () => 
             <a
               data-drawer-item
               href={whatsappLink(
-                `Olá, Black Wave! Quero saber mais sobre a aula experimental${modalidade && modalidade !== "Ainda não sei" ? ` de ${modalidade}` : ""}.`,
+                `Olá, Black Wave! Quero saber mais sobre a aula experimental${modalidade && modalidade !== "Ainda não sei" ? ` na turma ${modalidade}` : ""}.`,
               )}
               target="_blank"
               rel="noopener noreferrer"

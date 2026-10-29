@@ -356,7 +356,7 @@ export function PerturbationSection() {
             </p>
             <a
               href="#modalidades"
-              aria-label="Pular para modalidades"
+              aria-label="Pular para as turmas"
               onClick={(e) => {
                 e.preventDefault()
                 markTrailSeen()
@@ -365,7 +365,7 @@ export function PerturbationSection() {
               className="group -mr-3 flex items-center gap-3 px-3 py-3 text-paper transition-colors hover:text-accent"
             >
               <span className="pl-[0.32em]">
-                Pular <span className="max-sm:hidden">para modalidades</span>
+                Pular <span className="max-sm:hidden">para as turmas</span>
               </span>
               <svg width="16" height="10" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                 <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />

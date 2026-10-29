@@ -2,11 +2,12 @@ import { scrollToY } from "@/lib/scroll"
 import { WHATSAPP_DISPLAY, whatsappLink } from "@/config"
 import symbol from "./symbol-draw.json"
 
-// Seção 10 — Rodapé (SPEC.md §4). Selo circular girando (do patch da marca),
+// Seção 11 — Rodapé (SPEC.md §4). Selo circular girando (do patch da marca),
 // links, contato e créditos.
 
 const LINKS = [
-  { href: "#modalidades", label: "Modalidades" },
+  { href: "#modalidades", label: "Turmas" },
+  { href: "#planos", label: "Planos" },
   { href: "#kimonos", label: "Kimonos" },
   { href: "#vozes", label: "Vozes do tatame" },
   { href: "/ouvidoria/", label: "Ouvidoria" },

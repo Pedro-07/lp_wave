@@ -18,13 +18,14 @@ interface Item {
 }
 
 const ITEMS: Item[] = [
-  { id: "modalidades", n: "04", label: "Modalidades", main: true },
+  { id: "modalidades", n: "04", label: "Turmas e horários", main: true },
   { id: "perturbacao", n: "02", label: "A perturbação" },
   { id: "tatame", n: "03", label: "O tatame" },
-  { id: "kimonos", n: "05", label: "Kimonos" },
-  { id: "vozes", n: "06", label: "Vozes do tatame" },
-  { id: "ouvidoria", n: "07", label: "Ouvidoria" },
-  { id: "onde-estamos", n: "09", label: "Onde estamos" },
+  { id: "planos", n: "05", label: "Planos" },
+  { id: "kimonos", n: "06", label: "Kimonos" },
+  { id: "vozes", n: "07", label: "Vozes do tatame" },
+  { id: "ouvidoria", n: "08", label: "Ouvidoria" },
+  { id: "onde-estamos", n: "10", label: "Onde estamos" },
 ]
 
 /** Vai até a seção; se ela ainda não foi montada (logo após abrir o site), tenta de novo. */

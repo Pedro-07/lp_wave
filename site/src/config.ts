@@ -14,5 +14,19 @@ export function whatsappLink(text: string) {
   return `${base}?text=${encodeURIComponent(text)}`
 }
 
-export const MODALIDADES = ["Jiu-Jitsu Gi", "No-Gi", "Defesa pessoal", "Kids", "Feminino"] as const
+/** Turmas da grade noturna (cliente, 2026-10-28). Aulas de 60 minutos. */
+export const MODALIDADES = ["Iniciantes", "Kids", "Geral", "Feminina", "Corujão", "No-Gi"] as const
 export type Modalidade = (typeof MODALIDADES)[number]
+
+/** Dias e horário de cada turma. */
+export const GRADE: Record<Modalidade, { dias: string; horario: string }> = {
+  Iniciantes: { dias: "Seg, qua e sex", horario: "18h às 19h" },
+  Kids: { dias: "Ter, qui e sáb", horario: "18h às 19h" },
+  Geral: { dias: "Seg, qua e sex", horario: "19h às 20h" },
+  Feminina: { dias: "Ter e qui", horario: "19h às 20h" },
+  Corujão: { dias: "Seg, qua e sex", horario: "20h30 às 21h30" },
+  "No-Gi": { dias: "Ter e qui", horario: "20h30 às 21h30" },
+}
+
+/** Resumo para "Onde estamos" e dados estruturados. */
+export const HORARIO_RESUMO = "Segunda a sábado, das 18h às 21h30"

@@ -5,6 +5,7 @@ import { LocationSection } from "@/components/ui/location-section"
 import { ModalitiesSection } from "@/components/ui/modalities-section"
 import { OuvidoriaSection } from "@/components/ui/ouvidoria-section"
 import { PerturbationSection } from "@/components/ui/perturbation-section"
+import { PlansSection } from "@/components/ui/plans-section"
 import { SiteFooter } from "@/components/ui/site-footer"
 import { TestimonialsSection } from "@/components/ui/testimonials-section"
 import { TrainingVideoSection } from "@/components/ui/training-video-section"
@@ -31,6 +32,7 @@ export default function BelowFold() {
       <PerturbationSection />
       <TrainingVideoSection />
       <ModalitiesSection />
+      <PlansSection />
       <GearSection />
       <TestimonialsSection />
       <OuvidoriaSection />

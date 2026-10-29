@@ -2,12 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import { useIdleReady } from "@/lib/idle"
 import { gsap, ScrollTrigger, scrollToY, SplitText } from "@/lib/scroll"
-import type { Modalidade } from "@/config"
 import { CtaLink } from "./cta-link"
 import { WhatsappIcon } from "./whatsapp-icon"
-import { whatsappLink } from "@/config"
+import { GRADE, whatsappLink, type Modalidade } from "@/config"
 
-// Seção 4 — Modalidades (SPEC.md §4). A seção fica fixa (pin) e a rolagem
+// Seção 4 — Turmas (SPEC.md §4; antes "Modalidades"). A seção fica fixa (pin) e a rolagem
 // vertical move o carrossel para o lado; rolar/arrastar para o lado também
 // funciona e leva a página junto — as duas entradas ficam sincronizadas pela
 // posição horizontal da faixa (scrollLeft). Encaixe em cada painel. O painel
@@ -21,41 +20,49 @@ interface Mod {
   alt: string
 }
 
+// key = nome da imagem em /modalidades/ (as fotos vieram das modalidades antigas).
 const MODS: Mod[] = [
   {
-    key: "gi",
-    name: "Jiu-Jitsu Gi",
-    desc: "A arte com kimono. Pegadas, alavancas e paciência.",
-    para: "Iniciantes e graduados, a partir de [PREENCHER] anos.",
-    alt: "Dois atletas de kimono treinando guarda fechada no tatame",
-  },
-  {
-    key: "nogi",
-    name: "No-Gi",
-    desc: "Sem kimono, mais ritmo. Controle pelo corpo, não pelo tecido.",
-    para: "[PREENCHER]",
-    alt: "Dois atletas de rashguard disputando posição no tatame",
-  },
-  {
     key: "defesa",
-    name: "Defesa pessoal",
-    desc: "Sair de agarrões, controlar e ficar de pé. Jiu-Jitsu para a vida real.",
-    para: "[PREENCHER]",
+    name: "Iniciantes",
+    desc: "O primeiro passo. Fundamentos, postura e segurança para começar do jeito certo.",
+    para: "Quem nunca treinou ou está voltando ao tatame.",
     alt: "Pessoa escapando de uma pegada no punho",
   },
   {
     key: "kids",
     name: "Kids",
     desc: "Disciplina e confiança desde cedo.",
-    para: "Idades: [PREENCHER].",
+    para: "Crianças de 9 a 12 anos.",
     alt: "Mãos de uma criança amarrando a faixa branca com a ajuda do professor",
   },
   {
+    key: "gi",
+    name: "Geral",
+    desc: "A aula com kimono. Pegadas, alavancas e paciência.",
+    para: "Todas as faixas.",
+    alt: "Dois atletas de kimono treinando guarda fechada no tatame",
+  },
+  {
     key: "feminino",
-    name: "Feminino",
-    desc: "Turma só de mulheres [CONFIRMAR]. Mesmo tatame, mesma exigência técnica.",
-    para: "[PREENCHER]",
+    name: "Feminina",
+    desc: "Turma para mulheres. Mesmo tatame, mesma exigência técnica.",
+    para: "Mulheres, de todas as faixas.",
     alt: "Atleta de kimono preto segurando a gola da parceira de treino",
+  },
+  {
+    key: "corujao",
+    name: "Corujão",
+    desc: "O último horário da noite, para quem só chega ao tatame depois do trabalho.",
+    para: "Todas as faixas.",
+    alt: "Atleta de kimono preto apertando a faixa no tatame à noite",
+  },
+  {
+    key: "nogi",
+    name: "No-Gi",
+    desc: "Sem kimono, mais ritmo. Controle pelo corpo, não pelo tecido.",
+    para: "Todas as faixas.",
+    alt: "Dois atletas de rashguard disputando posição no tatame",
   },
 ]
 
@@ -370,7 +377,7 @@ export function ModalitiesSection() {
         <div className="flex flex-col gap-6 px-[var(--gutter)] lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="mb-4 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60 lg:mb-6">
-              <span className="text-accent">04</span> — Modalidades
+              <span className="text-accent">04</span> — Turmas
             </p>
             <h2
               id="modalidades-titulo"
@@ -387,8 +394,8 @@ export function ModalitiesSection() {
             </p>
             <div className="flex gap-2">
               {[
-                { dir: -1, label: "Modalidade anterior", d: "M12 1L2 8l10 7" },
-                { dir: 1, label: "Próxima modalidade", d: "M4 1l10 7-10 7" },
+                { dir: -1, label: "Turma anterior", d: "M12 1L2 8l10 7" },
+                { dir: 1, label: "Próxima turma", d: "M4 1l10 7-10 7" },
               ].map((b) => (
                 <button
                   key={b.dir}
@@ -441,9 +448,12 @@ export function ModalitiesSection() {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0)_30%,rgba(0,0,0,0.25)_55%,rgba(0,0,0,0.92)_100%)]" />
 
+                {/* Número some no painel em foco: os detalhes abertos sobem até ele
+                    (o contador "01 / 06" do topo já diz a posição) */}
                 <span
                   aria-hidden="true"
-                  className="mods-index absolute top-[clamp(1rem,2vw,1.75rem)] left-[clamp(1rem,2vw,1.75rem)] font-display text-[clamp(4rem,8vw,8rem)] leading-none font-extrabold"
+                  className="mods-index absolute top-[clamp(1rem,2vw,1.75rem)] left-[clamp(1rem,2vw,1.75rem)] font-display text-[clamp(4rem,8vw,8rem)] leading-none font-extrabold transition-opacity duration-500"
+                  style={{ opacity: on ? 0 : 1 }}
                 >
                   {pad(i + 1)}
                 </span>
@@ -464,7 +474,9 @@ export function ModalitiesSection() {
                         </div>
                         <div className="flex gap-3">
                           <dt className="w-24 shrink-0 text-[length:var(--fs-label)] uppercase tracking-[0.24em] text-paper/50">Horários</dt>
-                          <dd>[PREENCHER]</dd>
+                          <dd>
+                            {GRADE[m.name].dias} · {GRADE[m.name].horario}
+                          </dd>
                         </div>
                       </dl>
                       <a
@@ -473,14 +485,14 @@ export function ModalitiesSection() {
                         tabIndex={on ? 0 : -1}
                         className="group mt-6 inline-flex items-center gap-4 border border-paper/40 bg-ink/40 px-5 py-3.5 text-xs uppercase tracking-[0.18em] backdrop-blur-sm transition-colors duration-300 hover:border-accent hover:bg-accent sm:text-sm"
                       >
-                        <span className="max-sm:hidden">Agendar aula de {m.name}</span>
+                        <span className="max-sm:hidden">Agendar aula · {m.name}</span>
                         <span className="sm:hidden">Agendar esta aula</span>
                         <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
                           <path d="M0 6h16M11 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
                         </svg>
                       </a>
                       <a
-                        href={whatsappLink(`Olá, Black Wave! Tenho uma dúvida sobre as aulas de ${m.name}.`)}
+                        href={whatsappLink(`Olá, Black Wave! Tenho uma dúvida sobre a turma ${m.name}.`)}
                         target="_blank"
                         rel="noopener noreferrer"
                         tabIndex={on ? 0 : -1}
