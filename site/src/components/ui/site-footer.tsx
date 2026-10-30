@@ -1,15 +1,16 @@
 import { scrollToY } from "@/lib/scroll"
-import { WHATSAPP_DISPLAY, whatsappLink } from "@/config"
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, WHATSAPP_DISPLAY, whatsappLink } from "@/config"
+import { InstagramIcon } from "./instagram-icon"
 import symbol from "./symbol-draw.json"
+import { WhatsappIcon } from "./whatsapp-icon"
 
-// Seção 11 — Rodapé (SPEC.md §4). Selo circular girando (do patch da marca),
+// Seção 10 — Rodapé (SPEC.md §4). Selo circular girando (do patch da marca),
 // links, contato e créditos.
 
 const LINKS = [
   { href: "#modalidades", label: "Turmas" },
   { href: "#planos", label: "Planos" },
   { href: "#kimonos", label: "Kimonos" },
-  { href: "#vozes", label: "Vozes do tatame" },
   { href: "/ouvidoria/", label: "Ouvidoria" },
 ]
 
@@ -65,11 +66,17 @@ export function SiteFooter() {
           <p className={label + " mb-5"}>Contato</p>
           <ul className="grid gap-3">
             <li>
-              <a href={whatsappLink("Olá, Black Wave!")} target="_blank" rel="noopener noreferrer" className={link}>
-                WhatsApp {WHATSAPP_DISPLAY}
+              <a href={whatsappLink("Olá, Black Wave!")} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${WHATSAPP_DISPLAY}`} className={link + " inline-flex items-center gap-3"}>
+                <WhatsappIcon size={22} className="shrink-0 text-accent" />
+                {WHATSAPP_DISPLAY}
               </a>
             </li>
-            <li className="text-[length:var(--fs-body)] text-paper/50">Instagram [PREENCHER]</li>
+            <li>
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${INSTAGRAM_HANDLE}`} className={link + " inline-flex items-center gap-3"}>
+                <InstagramIcon size={22} className="shrink-0 text-accent" />
+                {INSTAGRAM_HANDLE}
+              </a>
+            </li>
             <li>
               <a href="#aula-experimental" className={link + " inline-flex items-center gap-3"}>
                 Agendar aula experimental <span className="text-accent">→</span>

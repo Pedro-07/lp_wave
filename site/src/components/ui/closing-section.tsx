@@ -5,7 +5,7 @@ import { gsap, SplitText } from "@/lib/scroll"
 import { CtaLink } from "./cta-link"
 import { addSymbolDraw, SymbolDraw } from "./symbol-draw"
 
-// Seção 9 — Fecho (SPEC.md §4). A tese da marca, linha a linha, e o traço do
+// Seção 8 — Fecho (SPEC.md §4). A tese da marca, linha a linha, e o traço do
 // símbolo se desenhando de novo: o site termina como começou (hero).
 
 export function ClosingSection() {
@@ -44,7 +44,7 @@ export function ClosingSection() {
       className="relative overflow-hidden border-t border-paper/10 bg-ink px-[var(--gutter)] py-[var(--space-section)] text-paper"
     >
       <p className="mb-8 text-[length:var(--fs-label)] uppercase tracking-[0.32em] text-paper/60">
-        <span className="text-accent">09</span> — Just Flow
+        <span className="text-accent">08</span> — Just Flow
       </p>
       <h2 id="fecho-titulo" className="font-display text-[length:var(--fs-list)] font-extrabold uppercase leading-[0.95] tracking-[-0.01em]">
         <span data-thesis-line className="block">

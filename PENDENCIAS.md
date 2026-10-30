@@ -15,7 +15,7 @@ Atualizado em 2026-10-29. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Professores: nome, faixa/grau, linhagem, tempo de ensino, títulos reais
   - Sugestão (2026-09-30): seção curta de professores, no formato compacto dos depoimentos (foto, nome, faixa, linhagem) — ainda não existe no site; propor ao cliente
 - [ ] Diferencial concreto da equipe (um fato, não adjetivo)
-- [~] Qual unidade está ativa; endereço e horários — **horários recebidos** (2026-10-28, grade noturna); falta o endereço
+- [~] Qual unidade está ativa; endereço e horários — **horários recebidos** (2026-10-28, grade noturna); **endereço recebido** (2026-10-30): Av. Maria Alice, Divinéia, São Luís – MA, 65067-430
 - [ ] Data de abertura da segunda unidade
 - [x] Turmas (2026-10-28): Iniciantes, Kids (9 a 12 anos), Geral, Feminina, Corujão e No-Gi — seg a sáb, aulas de 60 min. Grade em `site/src/config.ts` (GRADE)
   - [ ] Confirmar o público de Geral, Corujão e No-Gi (o site diz "Todas as faixas") e se há idade mínima nas turmas de adultos
@@ -32,6 +32,7 @@ Atualizado em 2026-10-29. Itens marcados [PREENCHER] no site dependem desta list
   - [ ] Ficha de criança (Kids): hoje é a mesma ficha; confirmar se o responsável preenche e se precisa de campos do responsável
 - Foto do Corujão: `assets/tatame/inicio-v.png` (gerada por IA, como as demais) → `site/public/modalidades/corujao.webp`
 - Seções renumeradas: 05 Planos (logo depois das turmas), 06 Kimonos, 07 Vozes, 08 Ouvidoria, 09 Just Flow, 10 Onde estamos
+- Seção de depoimentos (Vozes) fora do site por enquanto (2026-10-30): componente `testimonials-section.tsx` mantido; para voltar, recolocar em `below-fold.tsx`, no menu e no rodapé. Numeração atual: 07 Ouvidoria, 08 Just Flow, 09 Onde estamos
 
 ## Formulário
 - [x] Campos definidos (2026-09-30, versão curta): modalidade + nome (obrigatório); idade e experiência opcionais. Sem campo WhatsApp — a pessoa já envia pelo próprio WhatsApp
@@ -61,7 +62,7 @@ Atualizado em 2026-10-29. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] SEO local: endereço, telefone e horários para o JSON-LD e para o Perfil da Empresa no Google
 
 ## Seções 3–10 (plano aprovado 2026-09-29)
-- [~] **Número do WhatsApp**: provisório (98) 98855-8687 em `site/src/config.ts` — confirmar o definitivo
+- [~] **Número do WhatsApp**: (98) 98460-4369 em `site/src/config.ts` (cliente, 2026-10-30)
 - [ ] **Ativar a ouvidoria** (hoje responde "está sendo configurada"):
   1. **Banco (obrigatório):** Vercel → projeto lp-wave → Storage (ou Marketplace) → **Upstash for Redis** → criar (plano grátis) e conectar ao projeto. Isso cria sozinho as variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL/_TOKEN`).
   2. **Senha do painel (obrigatório):** Settings → Environment Variables → `OUVIDORIA_ADMIN_TOKEN` = uma senha longa (a equipe usa em /ouvidoria/gestao/).
@@ -71,8 +72,8 @@ Atualizado em 2026-10-29. Itens marcados [PREENCHER] no site dependem desta list
 - [ ] Kimonos: tamanhos disponíveis
 - [ ] Depoimentos reais (frase, nome, faixa, tempo de treino) — 3 ou mais (o carrossel tem 6 espaços; sobra = remover)
 - [ ] Foto de cada pessoa dos depoimentos (quadrada, rosto centralizado, ~400 px) — hoje há um espaço reservado com silhueta
-- [~] Endereço da unidade São Luís (horários já no site: "Segunda a sábado, das 18h às 21h30")
-- [ ] Instagram oficial
+- [x] Endereço da unidade São Luís: Av. Maria Alice, Divinéia, São Luís – MA, 65067-430 (no site e no JSON-LD, 2026-10-30)
+- [x] Instagram oficial: @blackwavejj (rodapé e JSON-LD, 2026-10-30)
 - [ ] Confirmar crédito "Identidade visual: Double Ace" no rodapé
 - [ ] Vídeo real de treino (substitui o gerado no Higgsfield)
 - [ ] Fotos reais dos kimonos (idealmente 24–36 fotos girando cada modelo/cor) para substituir o 360° gerado por IA

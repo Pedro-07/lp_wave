@@ -1,9 +1,9 @@
 // Dados de contato da Black Wave. PENDENCIAS.md: preencher quando o cliente enviar.
 
-/** WhatsApp com DDI + DDD, só números. Provisório (cliente, 2026-09-29): (98) 98855-8687. */
-export const WHATSAPP_NUMBER = "5598988558687"
+/** WhatsApp com DDI + DDD, só números. Cliente, 2026-10-30: (98) 98460-4369. */
+export const WHATSAPP_NUMBER = "5598984604369"
 /** Mesmo número, formatado para exibição. */
-export const WHATSAPP_DISPLAY = "(98) 98855-8687"
+export const WHATSAPP_DISPLAY = "(98) 98460-4369"
 
 /**
  * Link do WhatsApp com mensagem pronta. Sem número configurado, o wa.me abre o
@@ -30,3 +30,7 @@ export const GRADE: Record<Modalidade, { dias: string; horario: string }> = {
 
 /** Resumo para "Onde estamos" e dados estruturados. */
 export const HORARIO_RESUMO = "Segunda a sábado, das 18h às 21h30"
+
+/** Instagram oficial (cliente, 2026-10-30). */
+export const INSTAGRAM_HANDLE = "@blackwavejj"
+export const INSTAGRAM_URL = "https://www.instagram.com/blackwavejj/"

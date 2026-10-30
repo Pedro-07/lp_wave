@@ -7,7 +7,6 @@ import { OuvidoriaSection } from "@/components/ui/ouvidoria-section"
 import { PerturbationSection } from "@/components/ui/perturbation-section"
 import { PlansSection } from "@/components/ui/plans-section"
 import { SiteFooter } from "@/components/ui/site-footer"
-import { TestimonialsSection } from "@/components/ui/testimonials-section"
 import { TrainingVideoSection } from "@/components/ui/training-video-section"
 import { enqueueIdle } from "@/lib/idle"
 import { scrollToY } from "@/lib/scroll"
@@ -34,7 +33,6 @@ export default function BelowFold() {
       <ModalitiesSection />
       <PlansSection />
       <GearSection />
-      <TestimonialsSection />
       <OuvidoriaSection />
       <ClosingSection />
       <LocationSection />

@@ -4,12 +4,12 @@ import { useIdleReady } from "@/lib/idle"
 import { gsap } from "@/lib/scroll"
 import { HORARIO_RESUMO, whatsappLink } from "@/config"
 
-// Seção 10 — Onde estamos (SPEC.md §4). Endereço [PREENCHER].
+// Seção 9 — Onde estamos (SPEC.md §4). Endereço recebido do cliente em 2026-10-30.
 // Mapa do Google em P&B escuro (filtro CSS) e carregado só perto da tela.
 
-/** [PREENCHER] endereço completo; enquanto vazio, mapa e rota apontam para São Luís. */
-const ENDERECO = ""
-const MAPS_QUERY = ENDERECO || "São Luís, MA"
+/** Endereço exibido; o mapa e o "Como chegar" buscam pela versão com hífen simples. */
+const ENDERECO = "Av. Maria Alice, Divinéia, São Luís – MA, 65067-430"
+const MAPS_QUERY = "Av. Maria Alice, Divinéia, São Luís - MA, 65067-430"
 
 export function LocationSection() {
   const scope = useRef<HTMLElement>(null)
@@ -50,7 +50,7 @@ export function LocationSection() {
       className="relative overflow-hidden border-t border-paper/10 bg-ink py-[var(--space-section)] text-paper"
     >
       <p className={label + " mb-6 px-[var(--gutter)]"}>
-        <span className="text-accent">10</span> — Onde estamos
+        <span className="text-accent">09</span> — Onde estamos
       </p>
       <h2 id="onde-titulo" className="sr-only">
         Onde estamos: São Luís, Maranhão
@@ -68,7 +68,7 @@ export function LocationSection() {
           <dl data-loc-rise className="grid gap-6">
             <div>
               <dt className={label}>Endereço</dt>
-              <dd className="mt-2 text-[length:var(--fs-body)] leading-relaxed">{ENDERECO || "[PREENCHER]"}</dd>
+              <dd className="mt-2 text-[length:var(--fs-body)] leading-relaxed">{ENDERECO}</dd>
             </div>
             <div>
               <dt className={label}>Horários</dt>
@@ -82,7 +82,7 @@ export function LocationSection() {
           </dl>
           <div data-loc-rise className="flex flex-wrap gap-3">
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Black Wave Jiu Jitsu ${MAPS_QUERY}`)}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAPS_QUERY)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-4 bg-paper px-6 py-4 text-sm uppercase tracking-[0.2em] text-ink transition-colors duration-300 hover:bg-accent hover:text-paper"
@@ -93,7 +93,7 @@ export function LocationSection() {
               </svg>
             </a>
             <a
-              href={whatsappLink("Olá, Black Wave! Queria saber o endereço da academia.")}
+              href={whatsappLink("Olá, Black Wave! Queria ajuda para chegar à academia.")}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-4 border border-paper/40 px-6 py-4 text-sm uppercase tracking-[0.2em] transition-colors duration-300 hover:border-accent hover:bg-accent"
@@ -106,7 +106,7 @@ export function LocationSection() {
         <div data-loc-rise className="relative aspect-[4/3] overflow-hidden border border-paper/15 lg:col-span-7">
           <iframe
             title="Mapa: Black Wave em São Luís, MA"
-            src={`https://www.google.com/maps?q=${encodeURIComponent(MAPS_QUERY)}&z=13&output=embed`}
+            src={`https://www.google.com/maps?q=${encodeURIComponent(MAPS_QUERY)}&z=16&output=embed`}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="map-dark h-full w-full"
